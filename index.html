@@ -40,17 +40,21 @@
       white-space:nowrap;
     }
     .grid{display:grid; grid-template-columns: 1fr; gap:14px; margin-top:14px;}
-    @media (min-width: 900px){
-      .grid{grid-template-columns: 1.2fr .8fr;}
-    }
     .panel{
       border:1px solid rgba(255,255,255,.06);
       border-radius:16px;
       padding:14px;
       background:rgba(255,255,255,.02);
     }
+    .panelHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
     .panel h2{
-      margin:0 0 10px;
+      margin:0;
       font-family:var(--sans);
       font-size:15px;
       color:#eafff4;
@@ -68,7 +72,7 @@
       min-height: 320px;
     }
     .btnRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;}
-    button, a.btn{
+    button{
       appearance:none;
       border:1px solid rgba(0,255,102,.28);
       background:rgba(0,255,102,.06);
@@ -82,31 +86,13 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
+      white-space:nowrap;
     }
-    button:hover, a.btn:hover{background:rgba(0,255,102,.10);}
-    button:active, a.btn:active{transform: translateY(1px);}
+    button:hover{background:rgba(0,255,102,.10);}
+    button:active{transform: translateY(1px);}
     .ghost{border-color: rgba(255,255,255,.10); background: rgba(255,255,255,.03);}
-    .danger{border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.06);}
     .ok{color: var(--accent);}
     .small{font-size:12px; color:var(--muted); font-family:var(--sans); margin-top:8px;}
-    .list{
-      font-family:var(--sans);
-      font-size:13px;
-      color:#dfffee;
-      line-height:1.5;
-    }
-    .list code{font-family:var(--mono); color:var(--accent); font-size:12px;}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:999px;
-      padding:6px 10px;
-      font-family:var(--mono);
-      font-size:12px;
-      color:#dfffee;
-      background:rgba(255,255,255,.03);
-      margin:4px 6px 0 0;
-    }
   </style>
 </head>
 <body>
@@ -117,7 +103,8 @@
         <h1>Menú semanal automático</h1>
         <p class="sub">
           Genera 3 combinaciones: <b>Lunes-Martes</b>, <b>Miércoles-Jueves</b>, <b>Viernes</b>.
-          Cada combinación = <b>1 proteína</b> + <b>2 complementos</b>. Se guarda toda la semana.
+          Cada combinación = <b>1 proteína</b> + <b>2 complementos</b>.
+          La <b>categoría de proteína no se repite</b> dentro del menú semanal.
         </p>
       </div>
       <div class="badge" id="weekBadge">Semana: —</div>
@@ -125,7 +112,11 @@
 
     <div class="grid">
       <section class="panel">
-        <h2>Menú generado</h2>
+        <div class="panelHeader">
+          <h2>Menú generado</h2>
+          <button id="btnCopy" class="ghost">📋 Copiar</button>
+        </div>
+
         <div class="menuText" id="menuBox">Cargando…</div>
 
         <div class="btnRow">
@@ -136,66 +127,50 @@
           <button id="btnRedoV" class="ghost">↻ Rehacer Viernes</button>
         </div>
 
-        <div class="btnRow">
-          <button id="btnCopy" class="ghost">📋 Copiar</button>
-          <a id="btnWhats" class="btn" target="_blank" rel="noopener">💬 Mandar por WhatsApp</a>
-          <button id="btnDownload" class="ghost">⬇️ Descargar .txt</button>
-          <button id="btnReset" class="danger">🧹 Olvidar menú guardado</button>
-        </div>
-
         <div class="small" id="status"></div>
       </section>
-
-      <aside class="panel">
-        <h2>Reglas activas</h2>
-        <div class="list">
-          <div class="pill">🔒 Persistente por semana</div>
-          <div class="pill">🗓️ Desde sábado: siguiente semana</div>
-          <div class="pill">🥩 1 proteína</div>
-          <div class="pill">🥦 2 complementos</div>
-          <div class="pill">📌 Rehacer por bloque</div>
-          <p class="small">
-            Nota: “Generar menú” solo crea si aún no existe para esa semana objetivo. Para cambiarlo usa “Rehacer…”.
-          </p>
-        </div>
-      </aside>
     </div>
   </div>
 </div>
 
 <script>
 // =====================
-//  LISTAS (tuyas)
+//  LISTAS (tuyas) + categorías
+//  Regla: categoría NO se repite entre LM / MJ / V
 // =====================
+
 const PROTEINS = [
-  // Pollo
-  "Pollo asado",
-  "Pollo a la plancha",
-  "Pollo en salsa verde",
-  "Pollo con salsa de soya y limón",
-  "Pollo al gratín con chorizo",
-  "Pollo al gratín",
-  "Fajitas de pollo asadas",
-  "Tinga de pollo",
-  // Pechuga de pollo
-  "Pechuga de pollo asada",
-  "Pechuga de pollo a la plancha",
-  "Pechuga de pollo encebollada",
+  // Pollo (incluye pechuga, tinga, fajitas, etc.)
+  { name: "Pollo asado", cat: "pollo" },
+  { name: "Pollo a la plancha", cat: "pollo" },
+  { name: "Pollo en salsa verde", cat: "pollo" },
+  { name: "Pollo con salsa de soya y limón", cat: "pollo" },
+  { name: "Pollo al gratín con chorizo", cat: "pollo" },
+  { name: "Pollo al gratín", cat: "pollo" },
+  { name: "Fajitas de pollo asadas", cat: "pollo" },
+  { name: "Tinga de pollo", cat: "pollo" },
+  { name: "Pechuga de pollo asada", cat: "pollo" },
+  { name: "Pechuga de pollo a la plancha", cat: "pollo" },
+  { name: "Pechuga de pollo encebollada", cat: "pollo" },
+
   // Res
-  "Entrecot",
-  "Picadillo de res",
-  "Albóndigas de res",
-  "Salpicón de res",
+  { name: "Entrecot", cat: "res" },
+  { name: "Picadillo de res", cat: "res" },
+  { name: "Albóndigas de res", cat: "res" },
+  { name: "Salpicón de res", cat: "res" },
+
   // Cerdo
-  "Cerdo en salsa verde",
+  { name: "Cerdo en salsa verde", cat: "cerdo" },
+
   // Pescado / Mariscos
-  "Salmón asado",
-  "Ceviche de atún",
-  "Medallón de atún",
-  "Atún tipo bacalao",
+  { name: "Salmón asado", cat: "pescado" },
+  { name: "Ceviche de atún", cat: "pescado" },
+  { name: "Medallón de atún", cat: "pescado" },
+  { name: "Atún tipo bacalao", cat: "pescado" },
+
   // Otras
-  "Tortitas de papa con atún",
-  "Pastel de papa con queso y jamón"
+  { name: "Tortitas de papa con atún", cat: "otras" },
+  { name: "Pastel de papa con queso y jamón", cat: "otras" }
 ];
 
 const SIDES = [
@@ -239,7 +214,7 @@ const SIDES = [
 // =====================
 //  CONFIG
 // =====================
-const STORAGE_KEY = "menu_week_blocks_v2";
+const STORAGE_KEY = "menu_week_blocks_v3";
 const BLOCKS = [
   { key: "LM", title: "Lunes y Martes" },
   { key: "MJ", title: "Miércoles y Jueves" },
@@ -259,16 +234,11 @@ const els = {
   btnRedoMJ: document.getElementById("btnRedoMJ"),
   btnRedoV: document.getElementById("btnRedoV"),
   btnCopy: document.getElementById("btnCopy"),
-  btnWhats: document.getElementById("btnWhats"),
-  btnDownload: document.getElementById("btnDownload"),
-  btnReset: document.getElementById("btnReset"),
 };
 
 // =====================
 //  Utils
 // =====================
-function pad2(n){ return String(n).padStart(2,'0'); }
-
 function isoWeekInfo(date = new Date()){
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = d.getUTCDay() || 7; // 1..7
@@ -294,11 +264,10 @@ function setStatus(msg, ok=false){
 }
 
 function seededRng(seed){
-  // LCG determinístico
   let x = seed >>> 0;
   return function(){
     x = (1664525 * x + 1013904223) >>> 0;
-    return x / 4294967296; // 0..1
+    return x / 4294967296;
   };
 }
 
@@ -307,20 +276,25 @@ function pickOne(arr, rng){
 }
 
 function pickTwoDistinct(arr, rng){
-  if(arr.length < 2) throw new Error("SIDES necesita >= 2 elementos");
   const a = pickOne(arr, rng);
   let b = pickOne(arr, rng);
   let guard = 0;
-  while(b === a && guard++ < 20){
+  while(b === a && guard++ < 30){
     b = pickOne(arr, rng);
   }
   if(a === b){
-    // fallback súper seguro
     const idxA = arr.indexOf(a);
-    const idxB = (idxA + 1) % arr.length;
-    b = arr[idxB];
+    b = arr[(idxA + 1) % arr.length];
   }
   return [a,b];
+}
+
+function shuffleInPlace(arr, rng){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(rng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 function comboToText(blockTitle, combo){
@@ -333,7 +307,7 @@ function formatMenuText(meta, data){
   lines.push(`(Se mantiene fijo durante la semana. Desde sábado: ya puedes generar el de la siguiente.)`);
   lines.push("—".repeat(46));
   for(const b of BLOCKS){
-    const c = data.blocks[b.key];
+    const c = data.blocks?.[b.key];
     if(c){
       lines.push(comboToText(b.title, c));
     }
@@ -343,9 +317,7 @@ function formatMenuText(meta, data){
 
 function render(meta, data){
   els.weekBadge.textContent = `Semana objetivo: ${meta.week} (${meta.year})`;
-  const text = formatMenuText(meta, data);
-  els.menuBox.textContent = text;
-  els.btnWhats.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  els.menuBox.textContent = formatMenuText(meta, data);
 }
 
 // =====================
@@ -370,32 +342,77 @@ function isSameMeta(a,b){
 }
 
 // =====================
-//  Generator (por bloque)
+//  Generator con regla "categoría no se repite"
 // =====================
-function makeSeed(meta, blockKey, extraSalt=0){
-  // Seed estable por semana y bloque (si no hay extraSalt)
-  const base = meta.year * 1000 + meta.week;
-  const bk = blockKey.split("").reduce((s,ch)=>s+ch.charCodeAt(0),0);
-  return (base * 31 + bk * 997 + extraSalt) >>> 0;
+function makeSeed(meta, salt=0){
+  // estable por semana, cambia si salt cambia
+  const base = (meta.year * 1000 + meta.week) >>> 0;
+  return (base * 31 + (salt >>> 0)) >>> 0;
 }
 
-function generateBlock(meta, blockKey, extraSalt=0){
-  const rng = seededRng(makeSeed(meta, blockKey, extraSalt));
-  const protein = pickOne(PROTEINS, rng);
-  const sides = pickTwoDistinct(SIDES, rng);
-  return { protein, sides };
+function proteinsByCategory(){
+  const map = new Map();
+  for(const p of PROTEINS){
+    if(!map.has(p.cat)) map.set(p.cat, []);
+    map.get(p.cat).push(p);
+  }
+  return map;
 }
 
-function generateAllBlocks(meta, extraSalt=0){
+function generateAllBlocksUniqueCats(meta, salt=0){
+  const rng = seededRng(makeSeed(meta, salt));
+
+  const map = proteinsByCategory();
+  const cats = Array.from(map.keys());
+
+  if(cats.length < BLOCKS.length){
+    throw new Error("No hay suficientes categorías de proteína para 3 bloques.");
+  }
+
+  // Elegimos 3 categorías distintas de forma determinística
+  const shuffledCats = shuffleInPlace([...cats], rng);
+  const chosenCats = shuffledCats.slice(0, BLOCKS.length);
+
   const blocks = {};
-  for(const b of BLOCKS){
-    blocks[b.key] = generateBlock(meta, b.key, extraSalt);
+  for(let i = 0; i < BLOCKS.length; i++){
+    const b = BLOCKS[i];
+    const cat = chosenCats[i];
+    const proteinObj = pickOne(map.get(cat), rng);
+    const sides = pickTwoDistinct(SIDES, rng);
+    blocks[b.key] = { protein: proteinObj.name, proteinCat: cat, sides };
   }
   return blocks;
 }
 
+function regenerateSingleBlockKeepingUniqueCats(meta, existingBlocks, blockKey){
+  const usedCats = new Set();
+  for(const k of Object.keys(existingBlocks)){
+    if(k !== blockKey && existingBlocks[k]?.proteinCat){
+      usedCats.add(existingBlocks[k].proteinCat);
+    }
+  }
+
+  const map = proteinsByCategory();
+  let availableCats = Array.from(map.keys()).filter(c => !usedCats.has(c));
+
+  // Debe existir al menos 1 categoría libre para ese bloque
+  if(!availableCats.length){
+    // fallback (no debería pasar con 5 categorías), pero por seguridad:
+    availableCats = Array.from(map.keys());
+  }
+
+  const rng = seededRng(makeSeed(meta, Date.now() & 0xffffffff));
+  availableCats = shuffleInPlace(availableCats, rng);
+
+  const chosenCat = availableCats[0];
+  const proteinObj = pickOne(map.get(chosenCat), rng);
+  const sides = pickTwoDistinct(SIDES, rng);
+
+  return { protein: proteinObj.name, proteinCat: chosenCat, sides };
+}
+
 // =====================
-//  Logic: Semana objetivo + reglas
+//  Semana objetivo + carga
 // =====================
 function currentTargetMeta(){
   return targetWeekInfo(new Date());
@@ -405,30 +422,23 @@ function ensureMenuLoaded(){
   const meta = currentTargetMeta();
   const saved = loadSaved();
 
-  if(saved && isSameMeta(saved.meta, meta) && saved.blocks){
+  if(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length){
     render(meta, saved);
     setStatus("Cargado menú guardado para la semana objetivo.", true);
     return;
   }
 
-  // No existe para la semana objetivo: mostrar estado y esperar botón "Generar"
-  render(meta, { blocks: {} });
+  els.weekBadge.textContent = `Semana objetivo: ${meta.week} (${meta.year})`;
   els.menuBox.textContent =
     `No hay menú guardado para la semana objetivo (${meta.week}/${meta.year}).\n` +
     `Pulsa "Generar menú" para crearlo.\n\n` +
-    `Regla: de lunes a viernes, una vez creado se mantiene. En sábado ya genera para la siguiente semana.`;
+    `Regla: categorías de proteína sin repetirse entre los 3 bloques.`;
   setStatus("Listo para generar menú nuevo.", false);
 }
 
 // =====================
 //  Actions
 // =====================
-function canGenerateNewForTargetWeek(){
-  const meta = currentTargetMeta();
-  const saved = loadSaved();
-  return !(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
-}
-
 function actionGenerateIfEmpty(){
   const meta = currentTargetMeta();
   const saved = loadSaved();
@@ -439,7 +449,7 @@ function actionGenerateIfEmpty(){
     return;
   }
 
-  const blocks = generateAllBlocks(meta, /*extraSalt*/ 0);
+  const blocks = generateAllBlocksUniqueCats(meta, 0);
   const obj = save(meta, blocks);
   render(meta, obj);
   setStatus("Menú generado y guardado ✅", true);
@@ -447,10 +457,8 @@ function actionGenerateIfEmpty(){
 
 function actionRedoAll(){
   const meta = currentTargetMeta();
-  const saved = loadSaved();
-  const prevSalt = (saved && isSameMeta(saved.meta, meta) && saved.at) ? saved.at : Date.now();
-  // extraSalt cambia el resultado aunque sea misma semana
-  const blocks = generateAllBlocks(meta, prevSalt & 0xffffffff);
+  const salt = Date.now() & 0xffffffff;
+  const blocks = generateAllBlocksUniqueCats(meta, salt);
   const obj = save(meta, blocks);
   render(meta, obj);
   setStatus("Menú COMPLETO rehecho y guardado ✅", true);
@@ -460,11 +468,12 @@ function actionRedoBlock(blockKey){
   const meta = currentTargetMeta();
   const saved = loadSaved();
 
-  // si no hay saved para semana objetivo, primero creamos el resto base para no quedar incompleto
-  let blocks = (saved && isSameMeta(saved.meta, meta) && saved.blocks) ? {...saved.blocks} : generateAllBlocks(meta, 0);
+  // Si no hay menú para semana objetivo, primero lo creamos completo (único por categorías)
+  let blocks = (saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length)
+    ? {...saved.blocks}
+    : generateAllBlocksUniqueCats(meta, 0);
 
-  const salt = Date.now() & 0xffffffff;
-  blocks[blockKey] = generateBlock(meta, blockKey, salt);
+  blocks[blockKey] = regenerateSingleBlockKeepingUniqueCats(meta, blocks, blockKey);
 
   const obj = save(meta, blocks);
   render(meta, obj);
@@ -489,27 +498,6 @@ async function copyToClipboard(){
   }
 }
 
-function downloadTxt(){
-  const text = els.menuBox.textContent || "";
-  const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const meta = currentTargetMeta();
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `menu-${meta.year}-W${pad2(meta.week)}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  setStatus("Archivo .txt descargado ✅", true);
-}
-
-function resetAll(){
-  localStorage.removeItem(STORAGE_KEY);
-  setStatus("Menú guardado eliminado. Puedes generar uno nuevo.", true);
-  ensureMenuLoaded();
-}
-
 // =====================
 //  Wire events
 // =====================
@@ -519,8 +507,6 @@ els.btnRedoLM.addEventListener("click", () => actionRedoBlock("LM"));
 els.btnRedoMJ.addEventListener("click", () => actionRedoBlock("MJ"));
 els.btnRedoV.addEventListener("click",  () => actionRedoBlock("V"));
 els.btnCopy.addEventListener("click", copyToClipboard);
-els.btnDownload.addEventListener("click", downloadTxt);
-els.btnReset.addEventListener("click", resetAll);
 
 // =====================
 //  Init
