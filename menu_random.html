@@ -1,548 +1,531 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!doctype html>
+<html lang="es">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.3">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000; min-height: 14.0px}
-    span.s1 {font-kerning: none}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menú semanal (Proteína + Complementos)</title>
+  <style>
+    :root{
+      --bg:#0b0f0d;
+      --card:#0f1713;
+      --text:#c8ffe0;
+      --muted:#7bd3a3;
+      --accent:#00ff66;
+      --border: rgba(0,255,102,.22);
+      --shadow: 0 12px 40px rgba(0,0,0,.45);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    html,body{height:100%; margin:0; background:radial-gradient(1200px 700px at 20% 0%, rgba(0,255,102,.08), transparent 55%) , var(--bg); color:var(--text);}
+    .wrap{min-height:100%; display:flex; align-items:center; justify-content:center; padding:20px;}
+    .card{
+      width:min(980px, 100%);
+      background:linear-gradient(180deg, rgba(0,255,102,.06), transparent 35%), var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      box-shadow: var(--shadow);
+      padding:18px 18px 14px;
+    }
+    header{display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;}
+    h1{margin:0; font-family:var(--sans); font-size:20px; letter-spacing:.2px;}
+    .sub{margin:6px 0 0; color:var(--muted); font-family:var(--sans); font-size:13px; line-height:1.4;}
+    .badge{
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--accent);
+      border:1px solid var(--border);
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(0,255,102,.04);
+      white-space:nowrap;
+    }
+    .grid{display:grid; grid-template-columns: 1fr; gap:14px; margin-top:14px;}
+    @media (min-width: 900px){
+      .grid{grid-template-columns: 1.2fr .8fr;}
+    }
+    .panel{
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:16px;
+      padding:14px;
+      background:rgba(255,255,255,.02);
+    }
+    .panel h2{
+      margin:0 0 10px;
+      font-family:var(--sans);
+      font-size:15px;
+      color:#eafff4;
+    }
+    .menuText{
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.55;
+      white-space:pre-wrap;
+      word-break:break-word;
+      padding:12px;
+      border-radius:12px;
+      border:1px dashed rgba(0,255,102,.22);
+      background:rgba(0,0,0,.25);
+      min-height: 320px;
+    }
+    .btnRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;}
+    button, a.btn{
+      appearance:none;
+      border:1px solid rgba(0,255,102,.28);
+      background:rgba(0,255,102,.06);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-family:var(--sans);
+      font-size:13px;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    button:hover, a.btn:hover{background:rgba(0,255,102,.10);}
+    button:active, a.btn:active{transform: translateY(1px);}
+    .ghost{border-color: rgba(255,255,255,.10); background: rgba(255,255,255,.03);}
+    .danger{border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.06);}
+    .ok{color: var(--accent);}
+    .small{font-size:12px; color:var(--muted); font-family:var(--sans); margin-top:8px;}
+    .list{
+      font-family:var(--sans);
+      font-size:13px;
+      color:#dfffee;
+      line-height:1.5;
+    }
+    .list code{font-family:var(--mono); color:var(--accent); font-size:12px;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:999px;
+      padding:6px 10px;
+      font-family:var(--mono);
+      font-size:12px;
+      color:#dfffee;
+      background:rgba(255,255,255,.03);
+      margin:4px 6px 0 0;
+    }
   </style>
 </head>
 <body>
-<p class="p1"><span class="s1">&lt;!doctype html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html lang="es"&gt;</span></p>
-<p class="p1"><span class="s1">&lt;head&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8" /&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;Menú semanal (Proteína + Complementos)&lt;/title&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;style&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>:root{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--bg:#0b0f0d;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--card:#0f1713;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--text:#c8ffe0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--muted:#7bd3a3;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--accent:#00ff66;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--border: rgba(0,255,102,.22);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--shadow: 0 12px 40px rgba(0,0,0,.45);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>--sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>html,body{height:100%; margin:0; background:radial-gradient(1200px 700px at 20% 0%, rgba(0,255,102,.08), transparent 55%) , var(--bg); color:var(--text);}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.wrap{min-height:100%; display:flex; align-items:center; justify-content:center; padding:20px;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.card{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>width:min(980px, 100%);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background:linear-gradient(180deg, rgba(0,255,102,.06), transparent 35%), var(--card);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border:1px solid var(--border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-radius:20px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>box-shadow: var(--shadow);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding:18px 18px 14px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>header{display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>h1{margin:0; font-family:var(--sans); font-size:20px; letter-spacing:.2px;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.sub{margin:6px 0 0; color:var(--muted); font-family:var(--sans); font-size:13px; line-height:1.4;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.badge{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family:var(--mono);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size:12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color:var(--accent);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border:1px solid var(--border);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding:8px 10px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-radius:999px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background:rgba(0,255,102,.04);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>white-space:nowrap;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.grid{display:grid; grid-template-columns: 1fr; gap:14px; margin-top:14px;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>@media (min-width: 900px){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>.grid{grid-template-columns: 1.2fr .8fr;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.panel{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,.06);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-radius:16px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding:14px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background:rgba(255,255,255,.02);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.panel h2{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>margin:0 0 10px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family:var(--sans);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size:15px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color:#eafff4;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.menuText{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family:var(--mono);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size:13px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>line-height:1.55;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>white-space:pre-wrap;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>word-break:break-word;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding:12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-radius:12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border:1px dashed rgba(0,255,102,.22);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background:rgba(0,0,0,.25);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>min-height: 320px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.btnRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>button, a.btn{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>appearance:none;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border:1px solid rgba(0,255,102,.28);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background:rgba(0,255,102,.06);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color:var(--text);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-radius:12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding:10px 12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>cursor:pointer;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family:var(--sans);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size:13px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>text-decoration:none;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display:inline-flex;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>align-items:center;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>gap:8px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>button:hover, a.btn:hover{background:rgba(0,255,102,.10);}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>button:active, a.btn:active{transform: translateY(1px);}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.ghost{border-color: rgba(255,255,255,.10); background: rgba(255,255,255,.03);}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.danger{border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.06);}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.ok{color: var(--accent);}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.small{font-size:12px; color:var(--muted); font-family:var(--sans); margin-top:8px;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.list{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family:var(--sans);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size:13px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color:#dfffee;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>line-height:1.5;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.list code{font-family:var(--mono); color:var(--accent); font-size:12px;}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.pill{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>display:inline-flex; align-items:center; gap:8px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border:1px solid rgba(255,255,255,.08);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-radius:999px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding:6px 10px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family:var(--mono);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-size:12px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color:#dfffee;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>background:rgba(255,255,255,.03);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>margin:4px 6px 0 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;div class="wrap"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;div class="card"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;header&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;h1&gt;Menú semanal automático&lt;/h1&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;p class="sub"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Genera 3 combinaciones: &lt;b&gt;Lunes-Martes&lt;/b&gt;, &lt;b&gt;Miércoles-Jueves&lt;/b&gt;, &lt;b&gt;Viernes&lt;/b&gt;.</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>Cada combinación = &lt;b&gt;1 proteína&lt;/b&gt; + &lt;b&gt;2 complementos&lt;/b&gt;. Se guarda toda la semana.</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;div class="badge" id="weekBadge"&gt;Semana: —&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div class="grid"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;section class="panel"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;h2&gt;Menú generado&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="menuText" id="menuBox"&gt;Cargando…&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="btnRow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnGenerate"&gt;⚡ Generar menú&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnRedoAll"&gt;🔁 Rehacer TODO&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnRedoLM" class="ghost"&gt;↻ Rehacer Lunes-Martes&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnRedoMJ" class="ghost"&gt;↻ Rehacer Miércoles-Jueves&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnRedoV" class="ghost"&gt;↻ Rehacer Viernes&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="btnRow"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnCopy" class="ghost"&gt;📋 Copiar&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;a id="btnWhats" class="btn" target="_blank" rel="noopener"&gt;💬 Mandar por WhatsApp&lt;/a&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnDownload" class="ghost"&gt;⬇️ Descargar .txt&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;button id="btnReset" class="danger"&gt;🧹 Olvidar menú guardado&lt;/button&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="small" id="status"&gt;&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/section&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;aside class="panel"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;h2&gt;Reglas activas&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;div class="list"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="pill"&gt;🔒 Persistente por semana&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="pill"&gt;🗓️ Desde sábado: siguiente semana&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="pill"&gt;🥩 1 proteína&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="pill"&gt;🥦 2 complementos&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;div class="pill"&gt;📌 Rehacer por bloque&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;p class="small"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>Nota: “Generar menú” solo crea si aún no existe para esa semana objetivo. Para cambiarlo usa “Rehacer…”.</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/aside&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/div&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;script&gt;</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>LISTAS (tuyas)</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">const PROTEINS = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Pollo</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pollo asado",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pollo a la plancha",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pollo en salsa verde",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pollo con salsa de soya y limón",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pollo al gratín con chorizo",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pollo al gratín",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Fajitas de pollo asadas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Tinga de pollo",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Pechuga de pollo</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pechuga de pollo asada",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pechuga de pollo a la plancha",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pechuga de pollo encebollada",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Res</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Entrecot",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Picadillo de res",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Albóndigas de res",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Salpicón de res",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Cerdo</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Cerdo en salsa verde",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Pescado / Mariscos</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Salmón asado",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ceviche de atún",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Medallón de atún",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Atún tipo bacalao",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Otras</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Tortitas de papa con atún",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pastel de papa con queso y jamón"</span></p>
-<p class="p1"><span class="s1">];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">const SIDES = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Sopas / Cremas</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Sopa de fideo",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Sopa de verduras",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Sopa aguada",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Sopa de tortilla",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Crema de verdura",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Carbohidratos</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Arroz",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Arroz integral",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Quinoa",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Spaghetti blanco",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Spaghetti al ajo",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Pasta",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Leguminosas</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Lentejas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Frijoles de la olla",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Alubias guisadas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Papas</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Papas asadas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Papas al horno",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Puré de papa",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Verduras / Ensaladas</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada verde",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada de lechuga",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada de lechuga con espinaca",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada de nopales",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada de jitomate",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada de jitomate con lechuga",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Verduras al vapor",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Verduras asadas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Verduras salteadas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Verduras crudas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada con aguacate",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Ensalada verde con semillas",</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>"Guacamole"</span></p>
-<p class="p1"><span class="s1">];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>CONFIG</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">const STORAGE_KEY = "menu_week_blocks_v2";</span></p>
-<p class="p1"><span class="s1">const BLOCKS = [</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ key: "LM", title: "Lunes y Martes" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ key: "MJ", title: "Miércoles y Jueves" },</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>{ key: "V",<span class="Apple-converted-space">  </span>title: "Viernes" }</span></p>
-<p class="p1"><span class="s1">];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>DOM</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">const els = {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>weekBadge: document.getElementById("weekBadge"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>menuBox: document.getElementById("menuBox"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>status: document.getElementById("status"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnGenerate: document.getElementById("btnGenerate"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnRedoAll: document.getElementById("btnRedoAll"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnRedoLM: document.getElementById("btnRedoLM"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnRedoMJ: document.getElementById("btnRedoMJ"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnRedoV: document.getElementById("btnRedoV"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnCopy: document.getElementById("btnCopy"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnWhats: document.getElementById("btnWhats"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnDownload: document.getElementById("btnDownload"),</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>btnReset: document.getElementById("btnReset"),</span></p>
-<p class="p1"><span class="s1">};</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>Utils</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">function pad2(n){ return String(n).padStart(2,'0'); }</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function isoWeekInfo(date = new Date()){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const dayNum = d.getUTCDay() || 7; // 1..7</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>d.setUTCDate(d.getUTCDate() + 4 - dayNum);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return { year: d.getUTCFullYear(), week: weekNo };</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// Sábado = 6 (getDay: Dom=0..Sab=6). Regla: sábado ya permite generar "siguiente semana"</span></p>
-<p class="p1"><span class="s1">function targetWeekInfo(now = new Date()){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const day = now.getDay();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const base = new Date(now);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if(day === 6){ // sábado</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>base.setDate(base.getDate() + 7);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return isoWeekInfo(base);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function setStatus(msg, ok=false){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>els.status.textContent = msg;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>els.status.className = "small " + (ok ? "ok" : "");</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function seededRng(seed){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// LCG determinístico</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>let x = seed &gt;&gt;&gt; 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return function(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>x = (1664525 * x + 1013904223) &gt;&gt;&gt; 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return x / 4294967296; // 0..1</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>};</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function pickOne(arr, rng){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return arr[Math.floor(rng() * arr.length)];</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function pickTwoDistinct(arr, rng){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if(arr.length &lt; 2) throw new Error("SIDES necesita &gt;= 2 elementos");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const a = pickOne(arr, rng);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>let b = pickOne(arr, rng);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>let guard = 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>while(b === a &amp;&amp; guard++ &lt; 20){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>b = pickOne(arr, rng);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if(a === b){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>// fallback súper seguro</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const idxA = arr.indexOf(a);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const idxB = (idxA + 1) % arr.length;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>b = arr[idxB];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return [a,b];</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function comboToText(blockTitle, combo){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return `${blockTitle}:\n🍗/🥩 ${combo.protein}\n🥦 ${combo.sides[0]}\n🥦 ${combo.sides[1]}\n`;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function formatMenuText(meta, data){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const lines = [];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>lines.push(`MENÚ — Semana objetivo ISO ${meta.week} / ${meta.year}`);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>lines.push(`(Se mantiene fijo durante la semana. Desde sábado: ya puedes generar el de la siguiente.)`);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>lines.push("—".repeat(46));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>for(const b of BLOCKS){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const c = data.blocks[b.key];</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if(c){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>lines.push(comboToText(b.title, c));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return lines.join("\n").trim();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function render(meta, data){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>els.weekBadge.textContent = `Semana objetivo: ${meta.week} (${meta.year})`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const text = formatMenuText(meta, data);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>els.menuBox.textContent = text;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>els.btnWhats.href = `https://wa.me/?text=${encodeURIComponent(text)}`;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>Storage</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">function loadSaved(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>try{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const raw = localStorage.getItem(STORAGE_KEY);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>if(!raw) return null;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return JSON.parse(raw);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}catch{ return null; }</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function save(meta, blocks){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const obj = { meta, blocks, at: Date.now() };</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return obj;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function isSameMeta(a,b){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return a &amp;&amp; b &amp;&amp; a.week === b.week &amp;&amp; a.year === b.year;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>Generator (por bloque)</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">function makeSeed(meta, blockKey, extraSalt=0){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// Seed estable por semana y bloque (si no hay extraSalt)</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const base = meta.year * 1000 + meta.week;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const bk = blockKey.split("").reduce((s,ch)=&gt;s+ch.charCodeAt(0),0);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return (base * 31 + bk * 997 + extraSalt) &gt;&gt;&gt; 0;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function generateBlock(meta, blockKey, extraSalt=0){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const rng = seededRng(makeSeed(meta, blockKey, extraSalt));</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const protein = pickOne(PROTEINS, rng);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const sides = pickTwoDistinct(SIDES, rng);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return { protein, sides };</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function generateAllBlocks(meta, extraSalt=0){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const blocks = {};</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>for(const b of BLOCKS){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>blocks[b.key] = generateBlock(meta, b.key, extraSalt);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return blocks;</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>Logic: Semana objetivo + reglas</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">function currentTargetMeta(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return targetWeekInfo(new Date());</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function ensureMenuLoaded(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const meta = currentTargetMeta();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const saved = loadSaved();</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if(saved &amp;&amp; isSameMeta(saved.meta, meta) &amp;&amp; saved.blocks){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>render(meta, saved);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setStatus("Cargado menú guardado para la semana objetivo.", true);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// No existe para la semana objetivo: mostrar estado y esperar botón "Generar"</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>render(meta, { blocks: {} });</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>els.menuBox.textContent =</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>`No hay menú guardado para la semana objetivo (${meta.week}/${meta.year}).\n` +</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>`Pulsa "Generar menú" para crearlo.\n\n` +</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>`Regla: de lunes a viernes, una vez creado se mantiene. En sábado ya genera para la siguiente semana.`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setStatus("Listo para generar menú nuevo.", false);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>Actions</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">function canGenerateNewForTargetWeek(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const meta = currentTargetMeta();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const saved = loadSaved();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>return !(saved &amp;&amp; isSameMeta(saved.meta, meta) &amp;&amp; saved.blocks &amp;&amp; Object.keys(saved.blocks).length);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function actionGenerateIfEmpty(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const meta = currentTargetMeta();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const saved = loadSaved();</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>if(saved &amp;&amp; isSameMeta(saved.meta, meta) &amp;&amp; saved.blocks &amp;&amp; Object.keys(saved.blocks).length){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>render(meta, saved);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setStatus("Ya existe un menú para esta semana objetivo. Usa 'Rehacer...' si quieres cambiarlo.", false);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>return;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const blocks = generateAllBlocks(meta, /*extraSalt*/ 0);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const obj = save(meta, blocks);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>render(meta, obj);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setStatus("Menú generado y guardado ✅", true);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function actionRedoAll(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const meta = currentTargetMeta();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const saved = loadSaved();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const prevSalt = (saved &amp;&amp; isSameMeta(saved.meta, meta) &amp;&amp; saved.at) ? saved.at : Date.now();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// extraSalt cambia el resultado aunque sea misma semana</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const blocks = generateAllBlocks(meta, prevSalt &amp; 0xffffffff);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const obj = save(meta, blocks);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>render(meta, obj);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setStatus("Menú COMPLETO rehecho y guardado ✅", true);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function actionRedoBlock(blockKey){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const meta = currentTargetMeta();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const saved = loadSaved();</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>// si no hay saved para semana objetivo, primero creamos el resto base para no quedar incompleto</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>let blocks = (saved &amp;&amp; isSameMeta(saved.meta, meta) &amp;&amp; saved.blocks) ? {...saved.blocks} : generateAllBlocks(meta, 0);</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const salt = Date.now() &amp; 0xffffffff;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>blocks[blockKey] = generateBlock(meta, blockKey, salt);</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const obj = save(meta, blocks);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>render(meta, obj);</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const title = BLOCKS.find(b =&gt; b.key === blockKey)?.title || blockKey;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setStatus(`Bloque "${title}" rehecho y guardado ✅`, true);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">async function copyToClipboard(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const text = els.menuBox.textContent || "";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>try{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>await navigator.clipboard.writeText(text);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setStatus("Copiado al portapapeles ✅", true);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}catch{</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>const ta = document.createElement("textarea");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ta.value = text;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.body.appendChild(ta);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ta.select();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.execCommand("copy");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>document.body.removeChild(ta);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>setStatus("Copiado (modo compatibilidad) ✅", true);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>}</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function downloadTxt(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const text = els.menuBox.textContent || "";</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const blob = new Blob([text], {type: "text/plain;charset=utf-8"});</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const url = URL.createObjectURL(blob);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const meta = currentTargetMeta();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>const a = document.createElement("a");</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>a.href = url;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>a.download = `menu-${meta.year}-W${pad2(meta.week)}.txt`;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.body.appendChild(a);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>a.click();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>document.body.removeChild(a);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>URL.revokeObjectURL(url);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setStatus("Archivo .txt descargado ✅", true);</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">function resetAll(){</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>localStorage.removeItem(STORAGE_KEY);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>setStatus("Menú guardado eliminado. Puedes generar uno nuevo.", true);</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>ensureMenuLoaded();</span></p>
-<p class="p1"><span class="s1">}</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>Wire events</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">els.btnGenerate.addEventListener("click", actionGenerateIfEmpty);</span></p>
-<p class="p1"><span class="s1">els.btnRedoAll.addEventListener("click", actionRedoAll);</span></p>
-<p class="p1"><span class="s1">els.btnRedoLM.addEventListener("click", () =&gt; actionRedoBlock("LM"));</span></p>
-<p class="p1"><span class="s1">els.btnRedoMJ.addEventListener("click", () =&gt; actionRedoBlock("MJ"));</span></p>
-<p class="p1"><span class="s1">els.btnRedoV.addEventListener("click",<span class="Apple-converted-space">  </span>() =&gt; actionRedoBlock("V"));</span></p>
-<p class="p1"><span class="s1">els.btnCopy.addEventListener("click", copyToClipboard);</span></p>
-<p class="p1"><span class="s1">els.btnDownload.addEventListener("click", downloadTxt);</span></p>
-<p class="p1"><span class="s1">els.btnReset.addEventListener("click", resetAll);</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">//<span class="Apple-converted-space">  </span>Init</span></p>
-<p class="p1"><span class="s1">// =====================</span></p>
-<p class="p1"><span class="s1">ensureMenuLoaded();</span></p>
-<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+<div class="wrap">
+  <div class="card">
+    <header>
+      <div>
+        <h1>Menú semanal automático</h1>
+        <p class="sub">
+          Genera 3 combinaciones: <b>Lunes-Martes</b>, <b>Miércoles-Jueves</b>, <b>Viernes</b>.
+          Cada combinación = <b>1 proteína</b> + <b>2 complementos</b>. Se guarda toda la semana.
+        </p>
+      </div>
+      <div class="badge" id="weekBadge">Semana: —</div>
+    </header>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>Menú generado</h2>
+        <div class="menuText" id="menuBox">Cargando…</div>
+
+        <div class="btnRow">
+          <button id="btnGenerate">⚡ Generar menú</button>
+          <button id="btnRedoAll">🔁 Rehacer TODO</button>
+          <button id="btnRedoLM" class="ghost">↻ Rehacer Lunes-Martes</button>
+          <button id="btnRedoMJ" class="ghost">↻ Rehacer Miércoles-Jueves</button>
+          <button id="btnRedoV" class="ghost">↻ Rehacer Viernes</button>
+        </div>
+
+        <div class="btnRow">
+          <button id="btnCopy" class="ghost">📋 Copiar</button>
+          <a id="btnWhats" class="btn" target="_blank" rel="noopener">💬 Mandar por WhatsApp</a>
+          <button id="btnDownload" class="ghost">⬇️ Descargar .txt</button>
+          <button id="btnReset" class="danger">🧹 Olvidar menú guardado</button>
+        </div>
+
+        <div class="small" id="status"></div>
+      </section>
+
+      <aside class="panel">
+        <h2>Reglas activas</h2>
+        <div class="list">
+          <div class="pill">🔒 Persistente por semana</div>
+          <div class="pill">🗓️ Desde sábado: siguiente semana</div>
+          <div class="pill">🥩 1 proteína</div>
+          <div class="pill">🥦 2 complementos</div>
+          <div class="pill">📌 Rehacer por bloque</div>
+          <p class="small">
+            Nota: “Generar menú” solo crea si aún no existe para esa semana objetivo. Para cambiarlo usa “Rehacer…”.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================
+//  LISTAS (tuyas)
+// =====================
+const PROTEINS = [
+  // Pollo
+  "Pollo asado",
+  "Pollo a la plancha",
+  "Pollo en salsa verde",
+  "Pollo con salsa de soya y limón",
+  "Pollo al gratín con chorizo",
+  "Pollo al gratín",
+  "Fajitas de pollo asadas",
+  "Tinga de pollo",
+  // Pechuga de pollo
+  "Pechuga de pollo asada",
+  "Pechuga de pollo a la plancha",
+  "Pechuga de pollo encebollada",
+  // Res
+  "Entrecot",
+  "Picadillo de res",
+  "Albóndigas de res",
+  "Salpicón de res",
+  // Cerdo
+  "Cerdo en salsa verde",
+  // Pescado / Mariscos
+  "Salmón asado",
+  "Ceviche de atún",
+  "Medallón de atún",
+  "Atún tipo bacalao",
+  // Otras
+  "Tortitas de papa con atún",
+  "Pastel de papa con queso y jamón"
+];
+
+const SIDES = [
+  // Sopas / Cremas
+  "Sopa de fideo",
+  "Sopa de verduras",
+  "Sopa aguada",
+  "Sopa de tortilla",
+  "Crema de verdura",
+  // Carbohidratos
+  "Arroz",
+  "Arroz integral",
+  "Quinoa",
+  "Spaghetti blanco",
+  "Spaghetti al ajo",
+  "Pasta",
+  // Leguminosas
+  "Lentejas",
+  "Frijoles de la olla",
+  "Alubias guisadas",
+  // Papas
+  "Papas asadas",
+  "Papas al horno",
+  "Puré de papa",
+  // Verduras / Ensaladas
+  "Ensalada verde",
+  "Ensalada de lechuga",
+  "Ensalada de lechuga con espinaca",
+  "Ensalada de nopales",
+  "Ensalada de jitomate",
+  "Ensalada de jitomate con lechuga",
+  "Verduras al vapor",
+  "Verduras asadas",
+  "Verduras salteadas",
+  "Verduras crudas",
+  "Ensalada con aguacate",
+  "Ensalada verde con semillas",
+  "Guacamole"
+];
+
+// =====================
+//  CONFIG
+// =====================
+const STORAGE_KEY = "menu_week_blocks_v2";
+const BLOCKS = [
+  { key: "LM", title: "Lunes y Martes" },
+  { key: "MJ", title: "Miércoles y Jueves" },
+  { key: "V",  title: "Viernes" }
+];
+
+// =====================
+//  DOM
+// =====================
+const els = {
+  weekBadge: document.getElementById("weekBadge"),
+  menuBox: document.getElementById("menuBox"),
+  status: document.getElementById("status"),
+  btnGenerate: document.getElementById("btnGenerate"),
+  btnRedoAll: document.getElementById("btnRedoAll"),
+  btnRedoLM: document.getElementById("btnRedoLM"),
+  btnRedoMJ: document.getElementById("btnRedoMJ"),
+  btnRedoV: document.getElementById("btnRedoV"),
+  btnCopy: document.getElementById("btnCopy"),
+  btnWhats: document.getElementById("btnWhats"),
+  btnDownload: document.getElementById("btnDownload"),
+  btnReset: document.getElementById("btnReset"),
+};
+
+// =====================
+//  Utils
+// =====================
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+function isoWeekInfo(date = new Date()){
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7; // 1..7
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return { year: d.getUTCFullYear(), week: weekNo };
+}
+
+// Sábado = 6 (getDay: Dom=0..Sab=6). Regla: sábado ya permite generar "siguiente semana"
+function targetWeekInfo(now = new Date()){
+  const day = now.getDay();
+  const base = new Date(now);
+  if(day === 6){ // sábado
+    base.setDate(base.getDate() + 7);
+  }
+  return isoWeekInfo(base);
+}
+
+function setStatus(msg, ok=false){
+  els.status.textContent = msg;
+  els.status.className = "small " + (ok ? "ok" : "");
+}
+
+function seededRng(seed){
+  // LCG determinístico
+  let x = seed >>> 0;
+  return function(){
+    x = (1664525 * x + 1013904223) >>> 0;
+    return x / 4294967296; // 0..1
+  };
+}
+
+function pickOne(arr, rng){
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+function pickTwoDistinct(arr, rng){
+  if(arr.length < 2) throw new Error("SIDES necesita >= 2 elementos");
+  const a = pickOne(arr, rng);
+  let b = pickOne(arr, rng);
+  let guard = 0;
+  while(b === a && guard++ < 20){
+    b = pickOne(arr, rng);
+  }
+  if(a === b){
+    // fallback súper seguro
+    const idxA = arr.indexOf(a);
+    const idxB = (idxA + 1) % arr.length;
+    b = arr[idxB];
+  }
+  return [a,b];
+}
+
+function comboToText(blockTitle, combo){
+  return `${blockTitle}:\n🍗/🥩 ${combo.protein}\n🥦 ${combo.sides[0]}\n🥦 ${combo.sides[1]}\n`;
+}
+
+function formatMenuText(meta, data){
+  const lines = [];
+  lines.push(`MENÚ — Semana objetivo ISO ${meta.week} / ${meta.year}`);
+  lines.push(`(Se mantiene fijo durante la semana. Desde sábado: ya puedes generar el de la siguiente.)`);
+  lines.push("—".repeat(46));
+  for(const b of BLOCKS){
+    const c = data.blocks[b.key];
+    if(c){
+      lines.push(comboToText(b.title, c));
+    }
+  }
+  return lines.join("\n").trim();
+}
+
+function render(meta, data){
+  els.weekBadge.textContent = `Semana objetivo: ${meta.week} (${meta.year})`;
+  const text = formatMenuText(meta, data);
+  els.menuBox.textContent = text;
+  els.btnWhats.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+}
+
+// =====================
+//  Storage
+// =====================
+function loadSaved(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch{ return null; }
+}
+
+function save(meta, blocks){
+  const obj = { meta, blocks, at: Date.now() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+  return obj;
+}
+
+function isSameMeta(a,b){
+  return a && b && a.week === b.week && a.year === b.year;
+}
+
+// =====================
+//  Generator (por bloque)
+// =====================
+function makeSeed(meta, blockKey, extraSalt=0){
+  // Seed estable por semana y bloque (si no hay extraSalt)
+  const base = meta.year * 1000 + meta.week;
+  const bk = blockKey.split("").reduce((s,ch)=>s+ch.charCodeAt(0),0);
+  return (base * 31 + bk * 997 + extraSalt) >>> 0;
+}
+
+function generateBlock(meta, blockKey, extraSalt=0){
+  const rng = seededRng(makeSeed(meta, blockKey, extraSalt));
+  const protein = pickOne(PROTEINS, rng);
+  const sides = pickTwoDistinct(SIDES, rng);
+  return { protein, sides };
+}
+
+function generateAllBlocks(meta, extraSalt=0){
+  const blocks = {};
+  for(const b of BLOCKS){
+    blocks[b.key] = generateBlock(meta, b.key, extraSalt);
+  }
+  return blocks;
+}
+
+// =====================
+//  Logic: Semana objetivo + reglas
+// =====================
+function currentTargetMeta(){
+  return targetWeekInfo(new Date());
+}
+
+function ensureMenuLoaded(){
+  const meta = currentTargetMeta();
+  const saved = loadSaved();
+
+  if(saved && isSameMeta(saved.meta, meta) && saved.blocks){
+    render(meta, saved);
+    setStatus("Cargado menú guardado para la semana objetivo.", true);
+    return;
+  }
+
+  // No existe para la semana objetivo: mostrar estado y esperar botón "Generar"
+  render(meta, { blocks: {} });
+  els.menuBox.textContent =
+    `No hay menú guardado para la semana objetivo (${meta.week}/${meta.year}).\n` +
+    `Pulsa "Generar menú" para crearlo.\n\n` +
+    `Regla: de lunes a viernes, una vez creado se mantiene. En sábado ya genera para la siguiente semana.`;
+  setStatus("Listo para generar menú nuevo.", false);
+}
+
+// =====================
+//  Actions
+// =====================
+function canGenerateNewForTargetWeek(){
+  const meta = currentTargetMeta();
+  const saved = loadSaved();
+  return !(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
+}
+
+function actionGenerateIfEmpty(){
+  const meta = currentTargetMeta();
+  const saved = loadSaved();
+
+  if(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length){
+    render(meta, saved);
+    setStatus("Ya existe un menú para esta semana objetivo. Usa 'Rehacer...' si quieres cambiarlo.", false);
+    return;
+  }
+
+  const blocks = generateAllBlocks(meta, /*extraSalt*/ 0);
+  const obj = save(meta, blocks);
+  render(meta, obj);
+  setStatus("Menú generado y guardado ✅", true);
+}
+
+function actionRedoAll(){
+  const meta = currentTargetMeta();
+  const saved = loadSaved();
+  const prevSalt = (saved && isSameMeta(saved.meta, meta) && saved.at) ? saved.at : Date.now();
+  // extraSalt cambia el resultado aunque sea misma semana
+  const blocks = generateAllBlocks(meta, prevSalt & 0xffffffff);
+  const obj = save(meta, blocks);
+  render(meta, obj);
+  setStatus("Menú COMPLETO rehecho y guardado ✅", true);
+}
+
+function actionRedoBlock(blockKey){
+  const meta = currentTargetMeta();
+  const saved = loadSaved();
+
+  // si no hay saved para semana objetivo, primero creamos el resto base para no quedar incompleto
+  let blocks = (saved && isSameMeta(saved.meta, meta) && saved.blocks) ? {...saved.blocks} : generateAllBlocks(meta, 0);
+
+  const salt = Date.now() & 0xffffffff;
+  blocks[blockKey] = generateBlock(meta, blockKey, salt);
+
+  const obj = save(meta, blocks);
+  render(meta, obj);
+
+  const title = BLOCKS.find(b => b.key === blockKey)?.title || blockKey;
+  setStatus(`Bloque "${title}" rehecho y guardado ✅`, true);
+}
+
+async function copyToClipboard(){
+  const text = els.menuBox.textContent || "";
+  try{
+    await navigator.clipboard.writeText(text);
+    setStatus("Copiado al portapapeles ✅", true);
+  }catch{
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    setStatus("Copiado (modo compatibilidad) ✅", true);
+  }
+}
+
+function downloadTxt(){
+  const text = els.menuBox.textContent || "";
+  const blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const meta = currentTargetMeta();
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `menu-${meta.year}-W${pad2(meta.week)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  setStatus("Archivo .txt descargado ✅", true);
+}
+
+function resetAll(){
+  localStorage.removeItem(STORAGE_KEY);
+  setStatus("Menú guardado eliminado. Puedes generar uno nuevo.", true);
+  ensureMenuLoaded();
+}
+
+// =====================
+//  Wire events
+// =====================
+els.btnGenerate.addEventListener("click", actionGenerateIfEmpty);
+els.btnRedoAll.addEventListener("click", actionRedoAll);
+els.btnRedoLM.addEventListener("click", () => actionRedoBlock("LM"));
+els.btnRedoMJ.addEventListener("click", () => actionRedoBlock("MJ"));
+els.btnRedoV.addEventListener("click",  () => actionRedoBlock("V"));
+els.btnCopy.addEventListener("click", copyToClipboard);
+els.btnDownload.addEventListener("click", downloadTxt);
+els.btnReset.addEventListener("click", resetAll);
+
+// =====================
+//  Init
+// =====================
+ensureMenuLoaded();
+</script>
 </body>
 </html>
