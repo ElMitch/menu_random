@@ -4,117 +4,155 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Menú semanal</title>
+
   <style>
     :root{
-      --bg:#0b0f0d;
-      --card:#0f1713;
-      --text:#c8ffe0;
-      --muted:#7bd3a3;
-      --accent:#00ff66;
-      --border: rgba(0,255,102,.22);
-      --shadow: 0 12px 40px rgba(0,0,0,.45);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      /* ===== Tema claro + azul ===== */
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #2563eb;      /* azul */
+      --accentSoft: #e8f0ff;
+      --border: #d1d5db;
+      --shadow: 0 10px 28px rgba(0,0,0,.08);
+
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
-    html,body{height:100%; margin:0; background:radial-gradient(1200px 700px at 20% 0%, rgba(0,255,102,.08), transparent 55%) , var(--bg); color:var(--text);}
-    .wrap{min-height:100%; display:flex; align-items:center; justify-content:center; padding:16px;}
+
+    html,body{
+      height:100%;
+      margin:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+    }
+
+    .wrap{
+      min-height:100%;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:16px;
+    }
+
     .card{
-      width:min(980px, 100%);
-      background:linear-gradient(180deg, rgba(0,255,102,.06), transparent 35%), var(--card);
-      border:1px solid var(--border);
-      border-radius:20px;
+      width:100%;
+      max-width:560px; /* mobile-first */
+      background: var(--card);
+      border-radius:18px;
       box-shadow: var(--shadow);
       padding:16px;
     }
-    header{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;}
-    h1{margin:0; font-family:var(--sans); font-size:18px; letter-spacing:.2px;}
-    .sub{margin:6px 0 0; color:var(--muted); font-family:var(--sans); font-size:13px; line-height:1.35;}
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    /* ✅ Tipografía más grande */
+    h1{
+      margin:0;
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .sub{
+      margin:8px 0 0;
+      font-size:15px;
+      color: var(--muted);
+      line-height:1.45;
+    }
+
     .badge{
-      font-family:var(--mono);
-      font-size:12px;
-      color:var(--accent);
-      border:1px solid var(--border);
-      padding:8px 10px;
+      font-size:13px;
+      color: var(--accent);
+      background: var(--accentSoft);
+      padding:8px 12px;
       border-radius:999px;
-      background:rgba(0,255,102,.04);
       white-space:nowrap;
+      font-weight:700;
     }
 
     .panel{
-      border:1px solid rgba(255,255,255,.06);
+      margin-top:14px;
+      border:1px solid var(--border);
       border-radius:16px;
       padding:14px;
-      background:rgba(255,255,255,.02);
-      margin-top:12px;
+      background:#fafafa;
     }
 
     .panelHeader{
       display:flex;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       gap:10px;
       margin-bottom:10px;
     }
 
     .panel h2{
       margin:0;
-      font-family:var(--sans);
-      font-size:15px;
-      color:#eafff4;
+      font-size:17px;
+      font-weight:700;
     }
 
     button{
-      appearance:none;
-      border:1px solid rgba(0,255,102,.28);
-      background:rgba(0,255,102,.06);
-      color:var(--text);
-      border-radius:12px;
-      padding:12px 12px;
+      border:none;
+      background: var(--accent);
+      color:white;
+      border-radius:14px;
+      padding:14px 12px;
+      font-size:16px;     /* ✅ más grande */
+      font-weight:700;
       cursor:pointer;
-      font-family:var(--sans);
-      font-size:14px;
-      text-decoration:none;
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:8px;
-      white-space:nowrap;
+      -webkit-tap-highlight-color: transparent;
     }
-    button:hover{background:rgba(0,255,102,.10);}
-    button:active{transform: translateY(1px);}
-    .ghost{border-color: rgba(255,255,255,.10); background: rgba(255,255,255,.03);}
+
+    button:active{ transform: scale(.985); }
+
+    .ghost{
+      background: white;
+      color: var(--accent);
+      border:1px solid var(--border);
+    }
 
     .menuText{
-      font-family:var(--mono);
-      font-size:13px;
-      line-height:1.55;
+      font-family: var(--mono);
+      font-size:15px;      /* ✅ más grande */
+      line-height:1.65;
       white-space:pre-wrap;
-      word-break:break-word;
-      padding:12px;
-      border-radius:12px;
-      border:1px dashed rgba(0,255,102,.22);
-      background:rgba(0,0,0,.25);
-      min-height: 320px;
+      padding:14px;
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:white;
+      min-height:300px;
     }
 
-    /* ===== Status debajo del cuadro ===== */
+    /* Mensaje de estado (debajo del cuadro) */
     .statusBar{
       margin-top:10px;
-      padding:10px 12px;
+      padding:12px 14px;
       border-radius:12px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.03);
-      font-family:var(--sans);
-      font-size:12px;
-      color:var(--muted);
+      font-size:14px;   /* ✅ más grande */
+      background:#f1f5f9;
+      color: var(--muted);
+      line-height:1.35;
     }
     .statusBar.ok{
-      border-color: rgba(0,255,102,.22);
-      background: rgba(0,255,102,.06);
+      background: var(--accentSoft);
       color: var(--accent);
+      font-weight:700;
     }
 
-    /* ===== Diseño mobile: 2 botones grandes 50/50 ===== */
+    /* Botones principales 50/50 */
     .primaryRow{
       display:flex;
       gap:10px;
@@ -122,85 +160,90 @@
     }
     .primaryRow button{
       flex:1;
-      width:50%;
-      padding:14px 10px;
-      font-weight:600;
     }
 
-    /* Sección separada para “Otras opciones” */
+    /* Otras opciones */
     .otherSection{
       margin-top:18px;
       padding-top:14px;
-      border-top: 1px solid rgba(255,255,255,.08);
+      border-top:1px solid var(--border);
     }
     .otherTitle{
-      font-family:var(--sans);
-      font-size:13px;
-      color:var(--muted);
       margin:0 0 10px;
-      letter-spacing:.2px;
+      font-size:15px;   /* ✅ más grande */
+      color: var(--muted);
+      font-weight:700;
     }
     .otherRow{
       display:flex;
-      flex-wrap:wrap;
       gap:10px;
+      flex-wrap:wrap;
     }
     .otherRow button{
       flex:1;
-      min-width: 150px;
+      min-width:160px;
+    }
+
+    /* Botón copiar pequeño pero legible */
+    #btnCopy{
+      padding:10px 12px;
+      font-size:15px;
+      border-radius:12px;
     }
   </style>
 </head>
+
 <body>
 <div class="wrap">
   <div class="card">
+
     <header>
       <div>
-        <h1>Menú semanal automático</h1>
+        <h1>Menú semanal</h1>
         <p class="sub">
-          3 bloques: <b>Lunes-Martes</b>, <b>Miércoles-Jueves</b>, <b>Viernes</b>.
-          Cada bloque = <b>1 proteína</b> + <b>2 complementos</b> (sin repetir categoría de complemento en el mismo bloque).
-          Categoría de proteína sin repetirse en la semana.
+          3 bloques: <b>Lunes-Martes</b>, <b>Miércoles-Jueves</b>, <b>Viernes</b>.<br>
+          Cada bloque = <b>1 proteína</b> + <b>2 complementos</b>.
         </p>
       </div>
-      <div class="badge" id="weekBadge">Semana: —</div>
+      <div class="badge" id="weekBadge">Semana —</div>
     </header>
 
     <section class="panel">
       <div class="panelHeader">
         <h2>Menú generado</h2>
-        <button id="btnCopy" class="ghost">📋 Copiar</button>
+        <button id="btnCopy" class="ghost">Copiar</button>
       </div>
 
       <div class="menuText" id="menuBox">Cargando…</div>
 
-      <!-- ✅ AHORA: status aquí -->
+      <!-- ✅ status aquí -->
       <div id="status" class="statusBar">—</div>
 
-      <!-- Botones principales 50/50 (mobile) -->
       <div class="primaryRow">
-        <button id="btnGenerate">⚡ Generar menú</button>
-        <button id="btnRedoAll">🔁 Rehacer TODO</button>
+        <button id="btnGenerate">Generar menú</button>
+        <button id="btnRedoAll" class="ghost">Rehacer todo</button>
       </div>
 
-      <!-- Otras opciones -->
       <div class="otherSection">
         <p class="otherTitle">Otras opciones</p>
         <div class="otherRow">
-          <button id="btnRedoLM" class="ghost">↻ Lunes-Martes</button>
-          <button id="btnRedoMJ" class="ghost">↻ Miércoles-Jueves</button>
-          <button id="btnRedoV" class="ghost">↻ Viernes</button>
+          <button id="btnRedoLM" class="ghost">Lunes - Martes</button>
+          <button id="btnRedoMJ" class="ghost">Miércoles - Jueves</button>
+          <button id="btnRedoV" class="ghost">Viernes</button>
         </div>
       </div>
     </section>
+
   </div>
 </div>
 
 <script>
 // =====================
 //  PROTEÍNAS (con categoría)
+//  Regla: categoría NO se repite entre LM / MJ / V
 // =====================
 const PROTEINS = [
+  // Pollo (incluye pechuga, tinga, fajitas, etc.)
   { name: "Pollo asado", cat: "pollo" },
   { name: "Pollo a la plancha", cat: "pollo" },
   { name: "Pollo en salsa verde", cat: "pollo" },
@@ -213,32 +256,39 @@ const PROTEINS = [
   { name: "Pechuga de pollo a la plancha", cat: "pollo" },
   { name: "Pechuga de pollo encebollada", cat: "pollo" },
 
+  // Res
   { name: "Entrecot", cat: "res" },
   { name: "Picadillo de res", cat: "res" },
   { name: "Albóndigas de res", cat: "res" },
   { name: "Salpicón de res", cat: "res" },
 
+  // Cerdo
   { name: "Cerdo en salsa verde", cat: "cerdo" },
 
+  // Pescado / Mariscos
   { name: "Salmón asado", cat: "pescado" },
   { name: "Ceviche de atún", cat: "pescado" },
   { name: "Medallón de atún", cat: "pescado" },
   { name: "Atún tipo bacalao", cat: "pescado" },
 
+  // Otras
   { name: "Tortitas de papa con atún", cat: "otras" },
   { name: "Pastel de papa con queso y jamón", cat: "otras" }
 ];
 
 // =====================
 //  COMPLEMENTOS (con categoría)
+//  Regla: en el mismo bloque NO repetir categoría (ej. no 2 ensaladas)
 // =====================
 const SIDES = [
+  // Sopas / Cremas
   { name: "Sopa de fideo", cat: "sopa" },
   { name: "Sopa de verduras", cat: "sopa" },
   { name: "Sopa aguada", cat: "sopa" },
   { name: "Sopa de tortilla", cat: "sopa" },
   { name: "Crema de verdura", cat: "sopa" },
 
+  // Carbohidratos
   { name: "Arroz", cat: "carbo" },
   { name: "Arroz integral", cat: "carbo" },
   { name: "Quinoa", cat: "carbo" },
@@ -246,14 +296,17 @@ const SIDES = [
   { name: "Spaghetti al ajo", cat: "carbo" },
   { name: "Pasta", cat: "carbo" },
 
+  // Leguminosas
   { name: "Lentejas", cat: "leguminosa" },
   { name: "Frijoles de la olla", cat: "leguminosa" },
   { name: "Alubias guisadas", cat: "leguminosa" },
 
+  // Papas
   { name: "Papas asadas", cat: "papa" },
   { name: "Papas al horno", cat: "papa" },
   { name: "Puré de papa", cat: "papa" },
 
+  // Verduras / Ensaladas / Extras
   { name: "Ensalada verde", cat: "ensalada" },
   { name: "Ensalada de lechuga", cat: "ensalada" },
   { name: "Ensalada de lechuga con espinaca", cat: "ensalada" },
@@ -270,7 +323,7 @@ const SIDES = [
 ];
 
 // =====================
-const STORAGE_KEY = "menu_week_blocks_v4";
+const STORAGE_KEY = "menu_week_blocks_v5";
 const BLOCKS = [
   { key: "LM", title: "Lunes y Martes" },
   { key: "MJ", title: "Miércoles y Jueves" },
@@ -298,10 +351,13 @@ function isoWeekInfo(date = new Date()){
   return { year: d.getUTCFullYear(), week: weekNo };
 }
 
+// Sábado: ya permite generar para siguiente semana
 function targetWeekInfo(now = new Date()){
-  const day = now.getDay();
+  const day = now.getDay(); // Dom=0..Sab=6
   const base = new Date(now);
-  if(day === 6){ base.setDate(base.getDate() + 7); } // sábado => siguiente semana
+  if(day === 6){
+    base.setDate(base.getDate() + 7);
+  }
   return isoWeekInfo(base);
 }
 
@@ -453,7 +509,7 @@ function ensureMenuLoaded(){
 
   if(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length){
     render(meta, saved);
-    setStatus("Cargado menú guardado para la semana objetivo.", true);
+    setStatus("Menú cargado (guardado para esta semana).", true);
     return;
   }
 
@@ -461,7 +517,14 @@ function ensureMenuLoaded(){
   els.menuBox.textContent =
     `No hay menú guardado para la semana objetivo (${meta.week}/${meta.year}).\n` +
     `Pulsa "Generar menú" para crearlo.`;
-  setStatus("Listo para generar menú nuevo.", false);
+  setStatus("Listo para generar un menú nuevo.", false);
+}
+
+// =====================
+// Confirmaciones (acciones peligrosas)
+// =====================
+function confirmDanger(message){
+  return window.confirm(message);
 }
 
 function actionGenerateIfEmpty(){
@@ -470,7 +533,7 @@ function actionGenerateIfEmpty(){
 
   if(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length){
     render(meta, saved);
-    setStatus("Ya existe un menú para esta semana objetivo. Usa 'Rehacer...' si quieres cambiarlo.", false);
+    setStatus("Ya existe un menú para esta semana. Si deseas cambiarlo, usa 'Rehacer'.", false);
     return;
   }
 
@@ -482,17 +545,30 @@ function actionGenerateIfEmpty(){
 
 function actionRedoAll(){
   const meta = currentTargetMeta();
+  const ok = confirmDanger("¿Seguro que quieres rehacer TODO el menú?\n\nEsto cambiará los 3 bloques.");
+  if(!ok){
+    setStatus("Acción cancelada.", false);
+    return;
+  }
+
   const salt = Date.now() & 0xffffffff;
   const blocks = generateAllBlocksUniqueProteinCats(meta, salt);
   const obj = save(meta, blocks);
   render(meta, obj);
-  setStatus("Menú COMPLETO rehecho y guardado ✅", true);
+  setStatus("Menú completo rehecho ✅", true);
 }
 
 function actionRedoBlock(blockKey){
   const meta = currentTargetMeta();
-  const saved = loadSaved();
+  const title = BLOCKS.find(b => b.key === blockKey)?.title || "este bloque";
 
+  const ok = confirmDanger(`¿Seguro que quieres rehacer "${title}"?\n\nSolo cambiará ese bloque.`);
+  if(!ok){
+    setStatus("Acción cancelada.", false);
+    return;
+  }
+
+  const saved = loadSaved();
   let blocks = (saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length)
     ? {...saved.blocks}
     : generateAllBlocksUniqueProteinCats(meta, 0);
@@ -501,16 +577,14 @@ function actionRedoBlock(blockKey){
 
   const obj = save(meta, blocks);
   render(meta, obj);
-
-  const title = BLOCKS.find(b => b.key === blockKey)?.title || blockKey;
-  setStatus(`Bloque "${title}" rehecho y guardado ✅`, true);
+  setStatus(`Bloque "${title}" rehecho ✅`, true);
 }
 
 async function copyToClipboard(){
   const text = els.menuBox.textContent || "";
   try{
     await navigator.clipboard.writeText(text);
-    setStatus("Copiado al portapapeles ✅", true);
+    setStatus("Copiado ✅", true);
   }catch{
     const ta = document.createElement("textarea");
     ta.value = text;
@@ -518,10 +592,11 @@ async function copyToClipboard(){
     ta.select();
     document.execCommand("copy");
     document.body.removeChild(ta);
-    setStatus("Copiado (modo compatibilidad) ✅", true);
+    setStatus("Copiado ✅", true);
   }
 }
 
+// Wire
 els.btnGenerate.addEventListener("click", actionGenerateIfEmpty);
 els.btnRedoAll.addEventListener("click", actionRedoAll);
 els.btnRedoLM.addEventListener("click", () => actionRedoBlock("LM"));
@@ -529,7 +604,9 @@ els.btnRedoMJ.addEventListener("click", () => actionRedoBlock("MJ"));
 els.btnRedoV.addEventListener("click",  () => actionRedoBlock("V"));
 els.btnCopy.addEventListener("click", copyToClipboard);
 
+// Init
 ensureMenuLoaded();
 </script>
+
 </body>
 </html>
