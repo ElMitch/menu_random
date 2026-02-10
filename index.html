@@ -7,12 +7,11 @@
 
   <style>
     :root{
-      /* ===== Tema claro + azul ===== */
       --bg: #f4f6f8;
       --card: #ffffff;
       --text: #111827;
       --muted: #6b7280;
-      --accent: #2563eb;      /* azul */
+      --accent: #2563eb;
       --accentSoft: #e8f0ff;
       --border: #d1d5db;
       --shadow: 0 10px 28px rgba(0,0,0,.08);
@@ -39,7 +38,7 @@
 
     .card{
       width:100%;
-      max-width:560px; /* mobile-first */
+      max-width:560px;
       background: var(--card);
       border-radius:18px;
       box-shadow: var(--shadow);
@@ -53,7 +52,6 @@
       align-items:flex-start;
     }
 
-    /* ✅ Tipografía más grande */
     h1{
       margin:0;
       font-size:22px;
@@ -106,7 +104,7 @@
       color:white;
       border-radius:14px;
       padding:14px 12px;
-      font-size:16px;     /* ✅ más grande */
+      font-size:16px;
       font-weight:700;
       cursor:pointer;
       display:inline-flex;
@@ -114,6 +112,7 @@
       justify-content:center;
       gap:8px;
       -webkit-tap-highlight-color: transparent;
+      transition: transform .05s ease, opacity .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
     }
 
     button:active{ transform: scale(.985); }
@@ -124,9 +123,26 @@
       border:1px solid var(--border);
     }
 
+    /* ✅ Estado disabled bien claro */
+    button:disabled{
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+    }
+    button.ghost:disabled{
+      background: #f8fafc;
+      color: #94a3b8;
+      border-color: #e2e8f0;
+      opacity: 1; /* para que se vea “gris” pero legible */
+    }
+    button:not(.ghost):disabled{
+      background: #94a3b8;
+      opacity: 1;
+    }
+
     .menuText{
       font-family: var(--mono);
-      font-size:15px;      /* ✅ más grande */
+      font-size:15px;
       line-height:1.65;
       white-space:pre-wrap;
       padding:14px;
@@ -136,12 +152,11 @@
       min-height:300px;
     }
 
-    /* Mensaje de estado (debajo del cuadro) */
     .statusBar{
       margin-top:10px;
       padding:12px 14px;
       border-radius:12px;
-      font-size:14px;   /* ✅ más grande */
+      font-size:14px;
       background:#f1f5f9;
       color: var(--muted);
       line-height:1.35;
@@ -152,17 +167,13 @@
       font-weight:700;
     }
 
-    /* Botones principales 50/50 */
     .primaryRow{
       display:flex;
       gap:10px;
       margin-top:12px;
     }
-    .primaryRow button{
-      flex:1;
-    }
+    .primaryRow button{ flex:1; }
 
-    /* Otras opciones */
     .otherSection{
       margin-top:18px;
       padding-top:14px;
@@ -170,7 +181,7 @@
     }
     .otherTitle{
       margin:0 0 10px;
-      font-size:15px;   /* ✅ más grande */
+      font-size:15px;
       color: var(--muted);
       font-weight:700;
     }
@@ -184,7 +195,6 @@
       min-width:160px;
     }
 
-    /* Botón copiar pequeño pero legible */
     #btnCopy{
       padding:10px 12px;
       font-size:15px;
@@ -216,20 +226,20 @@
 
       <div class="menuText" id="menuBox">Cargando…</div>
 
-      <!-- ✅ status aquí -->
       <div id="status" class="statusBar">—</div>
 
       <div class="primaryRow">
         <button id="btnGenerate">Generar menú</button>
-        <button id="btnRedoAll" class="ghost">Rehacer todo</button>
+        <button id="btnRedoAll" class="ghost" disabled>Rehacer todo</button>
       </div>
 
-      <div class="otherSection">
+      <!-- Solo se muestra si ya existe menú -->
+      <div class="otherSection" id="otherSection" style="display:none;">
         <p class="otherTitle">Otras opciones</p>
         <div class="otherRow">
-          <button id="btnRedoLM" class="ghost">Lunes - Martes</button>
-          <button id="btnRedoMJ" class="ghost">Miércoles - Jueves</button>
-          <button id="btnRedoV" class="ghost">Viernes</button>
+          <button id="btnRedoLM" class="ghost" disabled>Rehacer Lunes - Martes</button>
+          <button id="btnRedoMJ" class="ghost" disabled>Rehacer Miércoles - Jueves</button>
+          <button id="btnRedoV" class="ghost" disabled>Rehacer Viernes</button>
         </div>
       </div>
     </section>
@@ -243,7 +253,6 @@
 //  Regla: categoría NO se repite entre LM / MJ / V
 // =====================
 const PROTEINS = [
-  // Pollo (incluye pechuga, tinga, fajitas, etc.)
   { name: "Pollo asado", cat: "pollo" },
   { name: "Pollo a la plancha", cat: "pollo" },
   { name: "Pollo en salsa verde", cat: "pollo" },
@@ -256,22 +265,18 @@ const PROTEINS = [
   { name: "Pechuga de pollo a la plancha", cat: "pollo" },
   { name: "Pechuga de pollo encebollada", cat: "pollo" },
 
-  // Res
   { name: "Entrecot", cat: "res" },
   { name: "Picadillo de res", cat: "res" },
   { name: "Albóndigas de res", cat: "res" },
   { name: "Salpicón de res", cat: "res" },
 
-  // Cerdo
   { name: "Cerdo en salsa verde", cat: "cerdo" },
 
-  // Pescado / Mariscos
   { name: "Salmón asado", cat: "pescado" },
   { name: "Ceviche de atún", cat: "pescado" },
   { name: "Medallón de atún", cat: "pescado" },
   { name: "Atún tipo bacalao", cat: "pescado" },
 
-  // Otras
   { name: "Tortitas de papa con atún", cat: "otras" },
   { name: "Pastel de papa con queso y jamón", cat: "otras" }
 ];
@@ -281,14 +286,12 @@ const PROTEINS = [
 //  Regla: en el mismo bloque NO repetir categoría (ej. no 2 ensaladas)
 // =====================
 const SIDES = [
-  // Sopas / Cremas
   { name: "Sopa de fideo", cat: "sopa" },
   { name: "Sopa de verduras", cat: "sopa" },
   { name: "Sopa aguada", cat: "sopa" },
   { name: "Sopa de tortilla", cat: "sopa" },
   { name: "Crema de verdura", cat: "sopa" },
 
-  // Carbohidratos
   { name: "Arroz", cat: "carbo" },
   { name: "Arroz integral", cat: "carbo" },
   { name: "Quinoa", cat: "carbo" },
@@ -296,17 +299,14 @@ const SIDES = [
   { name: "Spaghetti al ajo", cat: "carbo" },
   { name: "Pasta", cat: "carbo" },
 
-  // Leguminosas
   { name: "Lentejas", cat: "leguminosa" },
   { name: "Frijoles de la olla", cat: "leguminosa" },
   { name: "Alubias guisadas", cat: "leguminosa" },
 
-  // Papas
   { name: "Papas asadas", cat: "papa" },
   { name: "Papas al horno", cat: "papa" },
   { name: "Puré de papa", cat: "papa" },
 
-  // Verduras / Ensaladas / Extras
   { name: "Ensalada verde", cat: "ensalada" },
   { name: "Ensalada de lechuga", cat: "ensalada" },
   { name: "Ensalada de lechuga con espinaca", cat: "ensalada" },
@@ -323,7 +323,7 @@ const SIDES = [
 ];
 
 // =====================
-const STORAGE_KEY = "menu_week_blocks_v5";
+const STORAGE_KEY = "menu_week_blocks_v7";
 const BLOCKS = [
   { key: "LM", title: "Lunes y Martes" },
   { key: "MJ", title: "Miércoles y Jueves" },
@@ -334,6 +334,7 @@ const els = {
   weekBadge: document.getElementById("weekBadge"),
   menuBox: document.getElementById("menuBox"),
   status: document.getElementById("status"),
+  otherSection: document.getElementById("otherSection"),
   btnGenerate: document.getElementById("btnGenerate"),
   btnRedoAll: document.getElementById("btnRedoAll"),
   btnRedoLM: document.getElementById("btnRedoLM"),
@@ -364,6 +365,17 @@ function targetWeekInfo(now = new Date()){
 function setStatus(msg, ok=false){
   els.status.textContent = msg;
   els.status.className = "statusBar" + (ok ? " ok" : "");
+}
+
+function setHasMenuUI(hasMenu){
+  // Otras opciones solo cuando ya existe un menú
+  els.otherSection.style.display = hasMenu ? "block" : "none";
+
+  // ✅ Habilitar / deshabilitar botones peligrosos
+  els.btnRedoAll.disabled = !hasMenu;
+  els.btnRedoLM.disabled = !hasMenu;
+  els.btnRedoMJ.disabled = !hasMenu;
+  els.btnRedoV.disabled = !hasMenu;
 }
 
 function seededRng(seed){
@@ -448,7 +460,6 @@ function sidesByCategory(){
   return map;
 }
 
-// 2 complementos con categoría distinta (ej. no 2 ensaladas en el mismo bloque)
 function pickTwoSidesDifferentCats(rng){
   const map = sidesByCategory();
   const cats = Array.from(map.keys());
@@ -458,12 +469,10 @@ function pickTwoSidesDifferentCats(rng){
   return [a, b];
 }
 
-// proteínas con categoría única por semana (entre los 3 bloques)
 function generateAllBlocksUniqueProteinCats(meta, salt=0){
   const rng = seededRng(makeSeed(meta, salt));
   const pMap = proteinsByCategory();
   const pCats = Array.from(pMap.keys());
-
   const chosenProteinCats = shuffleInPlace([...pCats], rng).slice(0, BLOCKS.length);
 
   const blocks = {};
@@ -506,8 +515,11 @@ function currentTargetMeta(){
 function ensureMenuLoaded(){
   const meta = currentTargetMeta();
   const saved = loadSaved();
+  const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
 
-  if(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length){
+  setHasMenuUI(hasMenu);
+
+  if(hasMenu){
     render(meta, saved);
     setStatus("Menú cargado (guardado para esta semana).", true);
     return;
@@ -520,9 +532,6 @@ function ensureMenuLoaded(){
   setStatus("Listo para generar un menú nuevo.", false);
 }
 
-// =====================
-// Confirmaciones (acciones peligrosas)
-// =====================
 function confirmDanger(message){
   return window.confirm(message);
 }
@@ -530,9 +539,11 @@ function confirmDanger(message){
 function actionGenerateIfEmpty(){
   const meta = currentTargetMeta();
   const saved = loadSaved();
+  const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
 
-  if(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length){
+  if(hasMenu){
     render(meta, saved);
+    setHasMenuUI(true);
     setStatus("Ya existe un menú para esta semana. Si deseas cambiarlo, usa 'Rehacer'.", false);
     return;
   }
@@ -540,10 +551,13 @@ function actionGenerateIfEmpty(){
   const blocks = generateAllBlocksUniqueProteinCats(meta, 0);
   const obj = save(meta, blocks);
   render(meta, obj);
+  setHasMenuUI(true);
   setStatus("Menú generado y guardado ✅", true);
 }
 
 function actionRedoAll(){
+  if(els.btnRedoAll.disabled) return;
+
   const meta = currentTargetMeta();
   const ok = confirmDanger("¿Seguro que quieres rehacer TODO el menú?\n\nEsto cambiará los 3 bloques.");
   if(!ok){
@@ -555,28 +569,29 @@ function actionRedoAll(){
   const blocks = generateAllBlocksUniqueProteinCats(meta, salt);
   const obj = save(meta, blocks);
   render(meta, obj);
+  setHasMenuUI(true);
   setStatus("Menú completo rehecho ✅", true);
 }
 
 function actionRedoBlock(blockKey){
   const meta = currentTargetMeta();
-  const title = BLOCKS.find(b => b.key === blockKey)?.title || "este bloque";
+  const saved = loadSaved();
+  const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
+  if(!hasMenu) return;
 
+  const title = BLOCKS.find(b => b.key === blockKey)?.title || "este bloque";
   const ok = confirmDanger(`¿Seguro que quieres rehacer "${title}"?\n\nSolo cambiará ese bloque.`);
   if(!ok){
     setStatus("Acción cancelada.", false);
     return;
   }
 
-  const saved = loadSaved();
-  let blocks = (saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length)
-    ? {...saved.blocks}
-    : generateAllBlocksUniqueProteinCats(meta, 0);
-
+  let blocks = {...saved.blocks};
   blocks[blockKey] = regenerateSingleBlockKeepingUniqueProteinCats(meta, blocks, blockKey);
 
   const obj = save(meta, blocks);
   render(meta, obj);
+  setHasMenuUI(true);
   setStatus(`Bloque "${title}" rehecho ✅`, true);
 }
 
@@ -596,7 +611,6 @@ async function copyToClipboard(){
   }
 }
 
-// Wire
 els.btnGenerate.addEventListener("click", actionGenerateIfEmpty);
 els.btnRedoAll.addEventListener("click", actionRedoAll);
 els.btnRedoLM.addEventListener("click", () => actionRedoBlock("LM"));
@@ -604,9 +618,7 @@ els.btnRedoMJ.addEventListener("click", () => actionRedoBlock("MJ"));
 els.btnRedoV.addEventListener("click",  () => actionRedoBlock("V"));
 els.btnCopy.addEventListener("click", copyToClipboard);
 
-// Init
 ensureMenuLoaded();
 </script>
-
 </body>
 </html>
