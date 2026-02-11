@@ -52,16 +52,18 @@
       align-items:flex-start;
     }
 
+    /* ✅ +3 */
     h1{
       margin:0;
-      font-size:22px;
+      font-size:25px;
       font-weight:800;
       letter-spacing:.2px;
     }
 
+    /* ✅ +3 */
     .sub{
       margin:8px 0 0;
-      font-size:15px;
+      font-size:18px;
       color: var(--muted);
       line-height:1.45;
     }
@@ -92,19 +94,21 @@
       margin-bottom:10px;
     }
 
+    /* ✅ +3 */
     .panel h2{
       margin:0;
-      font-size:17px;
+      font-size:20px;
       font-weight:700;
     }
 
+    /* ✅ +3 */
     button{
       border:none;
       background: var(--accent);
       color:white;
       border-radius:14px;
       padding:14px 12px;
-      font-size:16px;
+      font-size:19px;
       font-weight:700;
       cursor:pointer;
       display:inline-flex;
@@ -139,9 +143,10 @@
       opacity: 1;
     }
 
+    /* ✅ +3 */
     .menuText{
       font-family: var(--mono);
-      font-size:15px;
+      font-size:18px;
       line-height:1.65;
       white-space:pre-wrap;
       padding:14px;
@@ -151,11 +156,12 @@
       min-height:300px;
     }
 
+    /* ✅ +3 */
     .statusBar{
       margin-top:10px;
       padding:12px 14px;
       border-radius:12px;
-      font-size:14px;
+      font-size:17px;
       background:#f1f5f9;
       color: var(--muted);
       line-height:1.35;
@@ -180,7 +186,7 @@
     }
     .otherTitle{
       margin:0 0 10px;
-      font-size:15px;
+      font-size:18px; /* también +3 (venía 15) */
       color: var(--muted);
       font-weight:700;
     }
@@ -196,7 +202,7 @@
 
     #btnCopy{
       padding:10px 12px;
-      font-size:15px;
+      font-size:18px; /* ajustado para que no se vea chico vs botones */
       border-radius:12px;
     }
   </style>
@@ -287,38 +293,33 @@ const PROTEINS = [
 
 // =====================
 //  COMPLEMENTOS (divididos)
-//  Regla nueva: 1 cocido + 1 crudo por bloque
-//  Se mantienen reglas anteriores (no duplicar categoría dentro del bloque),
-//  y aquí además forzamos que sea 1 y 1.
+//  Regla: 1 cocido + 1 crudo por bloque
 // =====================
 
 // Cocidos
 const COOKED_SIDES = [
-  // Sopas / “cocidos”
   { name: "Sopa de fideo", cat: "cocido_sopa" },
   { name: "Sopa de verduras", cat: "cocido_sopa" },
   { name: "Sopa aguada", cat: "cocido_sopa" },
   { name: "Sopa de tortilla", cat: "cocido_sopa" },
   { name: "Crema de verdura", cat: "cocido_sopa" },
   { name: "Caldo de verduras", cat: "cocido_sopa" },
+
   { name: "Sopa de lentejas", cat: "cocido_leguminosa" },
   { name: "Frijoles de la olla", cat: "cocido_leguminosa" },
   { name: "Sopa de alubias", cat: "cocido_leguminosa" },
   { name: "Sopa de garbanzos", cat: "cocido_leguminosa" },
 
-  // Carbohidratos
   { name: "Arroz", cat: "cocido_carbo" },
   { name: "Quinoa", cat: "cocido_carbo" },
   { name: "Spaghetti blanco", cat: "cocido_carbo" },
   { name: "Spaghetti al ajo", cat: "cocido_carbo" },
   { name: "Spaghetti rojo", cat: "cocido_carbo" },
 
-  // Papas
   { name: "Papas asadas", cat: "cocido_papa" },
   { name: "Papas al horno", cat: "cocido_papa" },
   { name: "Puré de papa", cat: "cocido_papa" },
 
-  // Verduras cocidas
   { name: "Verduras al vapor", cat: "cocido_verdura" },
   { name: "Verduras asadas", cat: "cocido_verdura" },
   { name: "Verduras salteadas", cat: "cocido_verdura" },
@@ -341,7 +342,7 @@ const RAW_SIDES = [
 ];
 
 // =====================
-const STORAGE_KEY = "menu_week_blocks_v8";
+const STORAGE_KEY = "menu_week_blocks_v9";
 const BLOCKS = [
   { key: "LM", title: "Lunes y Martes" },
   { key: "MJ", title: "Miércoles y Jueves" },
@@ -362,7 +363,7 @@ const els = {
 };
 
 // =====================
-//  Fechas: rango Lun–Vie (y sábado apunta a la siguiente semana)
+//  Fechas (Lun–Vie). Sábado => siguiente semana.
 // =====================
 const MONTHS_ES = [
   "Enero","Febrero","Marzo","Abril","Mayo","Junio",
@@ -372,7 +373,7 @@ const MONTHS_ES = [
 function startOfWeekMonday(date){
   const d = new Date(date);
   d.setHours(0,0,0,0);
-  const day = d.getDay(); // 0..6 (Dom..Sab)
+  const day = d.getDay(); // Dom=0..Sab=6
   const diffToMonday = (day === 0) ? -6 : (1 - day);
   d.setDate(d.getDate() + diffToMonday);
   return d;
@@ -385,41 +386,35 @@ function addDays(date, days){
 }
 
 function targetWeekRange(now = new Date()){
-  // Si es sábado, objetivo = siguiente semana
   const base = new Date(now);
-  if(base.getDay() === 6){
-    base.setDate(base.getDate() + 7);
-  }
+  if(base.getDay() === 6){ base.setDate(base.getDate() + 7); }
   const monday = startOfWeekMonday(base);
   const friday = addDays(monday, 4);
   return { monday, friday };
 }
 
+/* ✅ Maneja cambio de mes */
 function formatRangeLabel(monday, friday){
   const d1 = monday.getDate();
   const d2 = friday.getDate();
   const m1 = MONTHS_ES[monday.getMonth()];
   const m2 = MONTHS_ES[friday.getMonth()];
-  const year = monday.getFullYear(); // Lun–Vie casi siempre cae en el mismo año
+  const year = monday.getFullYear();
 
-  // Mismo mes
   if(monday.getMonth() === friday.getMonth()){
     return `${d1} a ${d2} de ${m1} ${year}`;
   }
-
-  // Mes distinto
   return `${d1} de ${m1} a ${d2} de ${m2} ${year}`;
 }
 
 function currentTargetMeta(){
   const { monday, friday } = targetWeekRange(new Date());
-  // Meta para persistencia: ISO-ish basada en monday (año + mes + día)
   const key = `${monday.getFullYear()}-${String(monday.getMonth()+1).padStart(2,'0')}-${String(monday.getDate()).padStart(2,'0')}`;
   return { key, monday, friday, label: formatRangeLabel(monday, friday), year: monday.getFullYear() };
 }
 
 // =====================
-//  Status / UI
+//  UI helpers
 // =====================
 function setStatus(msg, ok=false){
   els.status.textContent = msg;
@@ -443,7 +438,6 @@ function seededRng(seed){
 }
 
 function hashStringToUint(str){
-  // Hash simple y estable
   let h = 2166136261 >>> 0;
   for(let i=0; i<str.length; i++){
     h ^= str.charCodeAt(i);
@@ -473,16 +467,14 @@ function proteinsByCategory(){
   return map;
 }
 
-// 1 cocido + 1 crudo, y además evitamos que “cat” sea igual (por si cambias categorías después)
+/* 1 cocido + 1 crudo */
 function pickCookedAndRaw(rng){
   const cooked = pickOne(COOKED_SIDES, rng);
   let raw = pickOne(RAW_SIDES, rng);
-
   let guard = 0;
   while(raw.cat === cooked.cat && guard++ < 20){
     raw = pickOne(RAW_SIDES, rng);
   }
-
   return [cooked.name, raw.name];
 }
 
@@ -540,15 +532,10 @@ function makeSeed(meta, salt=0){
   return (base * 31 + (salt >>> 0)) >>> 0;
 }
 
-// proteínas con categoría única por semana (entre 3 bloques)
 function generateAllBlocksUniqueProteinCats(meta, salt=0){
   const rng = seededRng(makeSeed(meta, salt));
   const pMap = proteinsByCategory();
   const pCats = Array.from(pMap.keys());
-
-  if(pCats.length < BLOCKS.length){
-    throw new Error("No hay suficientes categorías de proteína para 3 bloques.");
-  }
 
   const chosenProteinCats = shuffleInPlace([...pCats], rng).slice(0, BLOCKS.length);
 
@@ -557,8 +544,7 @@ function generateAllBlocksUniqueProteinCats(meta, salt=0){
     const b = BLOCKS[i];
     const cat = chosenProteinCats[i];
     const proteinObj = pickOne(pMap.get(cat), rng);
-    const sides = pickCookedAndRaw(rng); // 1 cocido + 1 crudo
-
+    const sides = pickCookedAndRaw(rng);
     blocks[b.key] = { protein: proteinObj.name, proteinCat: cat, sides };
   }
   return blocks;
@@ -636,13 +622,13 @@ function actionGenerateIfEmpty(){
 function actionRedoAll(){
   if(els.btnRedoAll.disabled) return;
 
-  const meta = currentTargetMeta();
   const ok = confirmDanger("¿Seguro que quieres rehacer TODO el menú?\n\nEsto cambiará los 3 bloques.");
   if(!ok){
     setStatus("Acción cancelada.", false);
     return;
   }
 
+  const meta = currentTargetMeta();
   const salt = Date.now() & 0xffffffff;
   const blocks = generateAllBlocksUniqueProteinCats(meta, salt);
   const obj = save(meta, blocks);
