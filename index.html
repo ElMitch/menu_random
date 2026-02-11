@@ -123,7 +123,6 @@
       border:1px solid var(--border);
     }
 
-    /* ✅ Estado disabled bien claro */
     button:disabled{
       opacity: .45;
       cursor: not-allowed;
@@ -133,7 +132,7 @@
       background: #f8fafc;
       color: #94a3b8;
       border-color: #e2e8f0;
-      opacity: 1; /* para que se vea “gris” pero legible */
+      opacity: 1;
     }
     button:not(.ghost):disabled{
       background: #94a3b8;
@@ -212,10 +211,10 @@
         <h1>Menú semanal</h1>
         <p class="sub">
           3 bloques: <b>Lunes-Martes</b>, <b>Miércoles-Jueves</b>, <b>Viernes</b>.<br>
-          Cada bloque = <b>1 proteína</b> + <b>2 complementos</b>.
+          Cada bloque = <b>1 proteína</b> + <b>1 complemento cocido</b> + <b>1 complemento crudo</b>.
         </p>
       </div>
-      <div class="badge" id="weekBadge">Semana —</div>
+      <div class="badge" id="weekBadge">—</div>
     </header>
 
     <section class="panel">
@@ -233,7 +232,6 @@
         <button id="btnRedoAll" class="ghost" disabled>Rehacer todo</button>
       </div>
 
-      <!-- Solo se muestra si ya existe menú -->
       <div class="otherSection" id="otherSection" style="display:none;">
         <p class="otherTitle">Otras opciones</p>
         <div class="otherRow">
@@ -249,81 +247,101 @@
 
 <script>
 // =====================
-//  PROTEÍNAS (con categoría)
+//  PROTEÍNAS (actualizadas)
 //  Regla: categoría NO se repite entre LM / MJ / V
 // =====================
 const PROTEINS = [
-  { name: "Pollo asado", cat: "pollo" },
+  // Pollo
+  { name: "Muslo de pollo asado", cat: "pollo" },
   { name: "Pollo a la plancha", cat: "pollo" },
   { name: "Pollo en salsa verde", cat: "pollo" },
   { name: "Pollo con salsa de soya y limón", cat: "pollo" },
   { name: "Pollo al gratín con chorizo", cat: "pollo" },
-  { name: "Pollo al gratín", cat: "pollo" },
   { name: "Fajitas de pollo asadas", cat: "pollo" },
   { name: "Tinga de pollo", cat: "pollo" },
-  { name: "Pechuga de pollo asada", cat: "pollo" },
-  { name: "Pechuga de pollo a la plancha", cat: "pollo" },
   { name: "Pechuga de pollo encebollada", cat: "pollo" },
+  { name: "Enchiladas suizas con pollo", cat: "pollo" },
+  { name: "Tacos dorados de pollo", cat: "pollo" },
 
+  // Res
   { name: "Entrecot", cat: "res" },
   { name: "Picadillo de res", cat: "res" },
   { name: "Albóndigas de res", cat: "res" },
   { name: "Salpicón de res", cat: "res" },
 
+  // Cerdo
   { name: "Cerdo en salsa verde", cat: "cerdo" },
 
+  // Pescado / Mariscos
   { name: "Salmón asado", cat: "pescado" },
   { name: "Ceviche de atún", cat: "pescado" },
   { name: "Medallón de atún", cat: "pescado" },
   { name: "Atún tipo bacalao", cat: "pescado" },
+  { name: "Ceviche de atún (receta de Cathy) con mango", cat: "pescado" },
 
+  // Otras
   { name: "Tortitas de papa con atún", cat: "otras" },
-  { name: "Pastel de papa con queso y jamón", cat: "otras" }
+  { name: "Pastel de papa con queso y jamón", cat: "otras" },
+  { name: "Calabazas partidas a la mitad con carne y queso", cat: "otras" }
 ];
 
 // =====================
-//  COMPLEMENTOS (con categoría)
-//  Regla: en el mismo bloque NO repetir categoría (ej. no 2 ensaladas)
+//  COMPLEMENTOS (divididos)
+//  Regla nueva: 1 cocido + 1 crudo por bloque
+//  Se mantienen reglas anteriores (no duplicar categoría dentro del bloque),
+//  y aquí además forzamos que sea 1 y 1.
 // =====================
-const SIDES = [
-  { name: "Sopa de fideo", cat: "sopa" },
-  { name: "Sopa de verduras", cat: "sopa" },
-  { name: "Sopa aguada", cat: "sopa" },
-  { name: "Sopa de tortilla", cat: "sopa" },
-  { name: "Crema de verdura", cat: "sopa" },
 
-  { name: "Arroz", cat: "carbo" },
-  { name: "Arroz integral", cat: "carbo" },
-  { name: "Quinoa", cat: "carbo" },
-  { name: "Spaghetti blanco", cat: "carbo" },
-  { name: "Spaghetti al ajo", cat: "carbo" },
-  { name: "Pasta", cat: "carbo" },
+// Cocidos
+const COOKED_SIDES = [
+  // Sopas / “cocidos”
+  { name: "Sopa de fideo", cat: "cocido_sopa" },
+  { name: "Sopa de verduras", cat: "cocido_sopa" },
+  { name: "Sopa aguada", cat: "cocido_sopa" },
+  { name: "Sopa de tortilla", cat: "cocido_sopa" },
+  { name: "Crema de verdura", cat: "cocido_sopa" },
+  { name: "Caldo de verduras", cat: "cocido_sopa" },
+  { name: "Sopa de lentejas", cat: "cocido_leguminosa" },
+  { name: "Frijoles de la olla", cat: "cocido_leguminosa" },
+  { name: "Sopa de alubias", cat: "cocido_leguminosa" },
+  { name: "Sopa de garbanzos", cat: "cocido_leguminosa" },
 
-  { name: "Lentejas", cat: "leguminosa" },
-  { name: "Frijoles de la olla", cat: "leguminosa" },
-  { name: "Alubias guisadas", cat: "leguminosa" },
+  // Carbohidratos
+  { name: "Arroz", cat: "cocido_carbo" },
+  { name: "Quinoa", cat: "cocido_carbo" },
+  { name: "Spaghetti blanco", cat: "cocido_carbo" },
+  { name: "Spaghetti al ajo", cat: "cocido_carbo" },
+  { name: "Spaghetti rojo", cat: "cocido_carbo" },
 
-  { name: "Papas asadas", cat: "papa" },
-  { name: "Papas al horno", cat: "papa" },
-  { name: "Puré de papa", cat: "papa" },
+  // Papas
+  { name: "Papas asadas", cat: "cocido_papa" },
+  { name: "Papas al horno", cat: "cocido_papa" },
+  { name: "Puré de papa", cat: "cocido_papa" },
 
-  { name: "Ensalada verde", cat: "ensalada" },
-  { name: "Ensalada de lechuga", cat: "ensalada" },
-  { name: "Ensalada de lechuga con espinaca", cat: "ensalada" },
-  { name: "Ensalada de nopales", cat: "ensalada" },
-  { name: "Ensalada de jitomate", cat: "ensalada" },
-  { name: "Ensalada de jitomate con lechuga", cat: "ensalada" },
-  { name: "Verduras al vapor", cat: "verdura" },
-  { name: "Verduras asadas", cat: "verdura" },
-  { name: "Verduras salteadas", cat: "verdura" },
-  { name: "Verduras crudas", cat: "verdura" },
-  { name: "Ensalada con aguacate", cat: "ensalada" },
-  { name: "Ensalada verde con semillas", cat: "ensalada" },
-  { name: "Guacamole", cat: "extra" }
+  // Verduras cocidas
+  { name: "Verduras al vapor", cat: "cocido_verdura" },
+  { name: "Verduras asadas", cat: "cocido_verdura" },
+  { name: "Verduras salteadas", cat: "cocido_verdura" },
+];
+
+// Crudos
+const RAW_SIDES = [
+  { name: "Ensalada verde", cat: "crudo_ensalada" },
+  { name: "Ensalada de lechuga", cat: "crudo_ensalada" },
+  { name: "Ensalada de lechuga con espinaca", cat: "crudo_ensalada" },
+  { name: "Ensalada de nopales", cat: "crudo_ensalada" },
+  { name: "Ensalada de jitomate", cat: "crudo_ensalada" },
+  { name: "Ensalada de jitomate con lechuga", cat: "crudo_ensalada" },
+  { name: "Verduras crudas", cat: "crudo_verdura" },
+  { name: "Ensalada con aguacate", cat: "crudo_ensalada" },
+  { name: "Ensalada verde con semillas", cat: "crudo_ensalada" },
+  { name: "Guacamole sin lechuga revuelta", cat: "crudo_extra" },
+  { name: "Ensalada de ejotes con espárragos", cat: "crudo_ensalada" },
+  { name: "Ensalada con germinado de lentejas", cat: "crudo_ensalada" },
 ];
 
 // =====================
-const STORAGE_KEY = "menu_week_blocks_v7";
+const STORAGE_KEY = "menu_week_blocks_v8";
 const BLOCKS = [
   { key: "LM", title: "Lunes y Martes" },
   { key: "MJ", title: "Miércoles y Jueves" },
@@ -343,35 +361,73 @@ const els = {
   btnCopy: document.getElementById("btnCopy"),
 };
 
-function isoWeekInfo(date = new Date()){
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return { year: d.getUTCFullYear(), week: weekNo };
+// =====================
+//  Fechas: rango Lun–Vie (y sábado apunta a la siguiente semana)
+// =====================
+const MONTHS_ES = [
+  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+];
+
+function startOfWeekMonday(date){
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  const day = d.getDay(); // 0..6 (Dom..Sab)
+  const diffToMonday = (day === 0) ? -6 : (1 - day);
+  d.setDate(d.getDate() + diffToMonday);
+  return d;
 }
 
-// Sábado: ya permite generar para siguiente semana
-function targetWeekInfo(now = new Date()){
-  const day = now.getDay(); // Dom=0..Sab=6
+function addDays(date, days){
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function targetWeekRange(now = new Date()){
+  // Si es sábado, objetivo = siguiente semana
   const base = new Date(now);
-  if(day === 6){
+  if(base.getDay() === 6){
     base.setDate(base.getDate() + 7);
   }
-  return isoWeekInfo(base);
+  const monday = startOfWeekMonday(base);
+  const friday = addDays(monday, 4);
+  return { monday, friday };
 }
 
+function formatRangeLabel(monday, friday){
+  const d1 = monday.getDate();
+  const d2 = friday.getDate();
+  const m1 = MONTHS_ES[monday.getMonth()];
+  const m2 = MONTHS_ES[friday.getMonth()];
+  const year = monday.getFullYear(); // Lun–Vie casi siempre cae en el mismo año
+
+  // Mismo mes
+  if(monday.getMonth() === friday.getMonth()){
+    return `${d1} a ${d2} de ${m1} ${year}`;
+  }
+
+  // Mes distinto
+  return `${d1} de ${m1} a ${d2} de ${m2} ${year}`;
+}
+
+function currentTargetMeta(){
+  const { monday, friday } = targetWeekRange(new Date());
+  // Meta para persistencia: ISO-ish basada en monday (año + mes + día)
+  const key = `${monday.getFullYear()}-${String(monday.getMonth()+1).padStart(2,'0')}-${String(monday.getDate()).padStart(2,'0')}`;
+  return { key, monday, friday, label: formatRangeLabel(monday, friday), year: monday.getFullYear() };
+}
+
+// =====================
+//  Status / UI
+// =====================
 function setStatus(msg, ok=false){
   els.status.textContent = msg;
   els.status.className = "statusBar" + (ok ? " ok" : "");
 }
 
 function setHasMenuUI(hasMenu){
-  // Otras opciones solo cuando ya existe un menú
   els.otherSection.style.display = hasMenu ? "block" : "none";
-
-  // ✅ Habilitar / deshabilitar botones peligrosos
   els.btnRedoAll.disabled = !hasMenu;
   els.btnRedoLM.disabled = !hasMenu;
   els.btnRedoMJ.disabled = !hasMenu;
@@ -386,6 +442,16 @@ function seededRng(seed){
   };
 }
 
+function hashStringToUint(str){
+  // Hash simple y estable
+  let h = 2166136261 >>> 0;
+  for(let i=0; i<str.length; i++){
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
 function pickOne(arr, rng){
   return arr[Math.floor(rng() * arr.length)];
 }
@@ -398,13 +464,35 @@ function shuffleInPlace(arr, rng){
   return arr;
 }
 
+function proteinsByCategory(){
+  const map = new Map();
+  for(const p of PROTEINS){
+    if(!map.has(p.cat)) map.set(p.cat, []);
+    map.get(p.cat).push(p);
+  }
+  return map;
+}
+
+// 1 cocido + 1 crudo, y además evitamos que “cat” sea igual (por si cambias categorías después)
+function pickCookedAndRaw(rng){
+  const cooked = pickOne(COOKED_SIDES, rng);
+  let raw = pickOne(RAW_SIDES, rng);
+
+  let guard = 0;
+  while(raw.cat === cooked.cat && guard++ < 20){
+    raw = pickOne(RAW_SIDES, rng);
+  }
+
+  return [cooked.name, raw.name];
+}
+
 function comboToText(blockTitle, combo){
-  return `${blockTitle}:\n🍗/🥩 ${combo.protein}\n🥦 ${combo.sides[0]}\n🥦 ${combo.sides[1]}\n`;
+  return `${blockTitle}:\n🍗/🥩 ${combo.protein}\n🍲 (Cocido) ${combo.sides[0]}\n🥗 (Crudo) ${combo.sides[1]}\n`;
 }
 
 function formatMenuText(meta, data){
   const lines = [];
-  lines.push(`MENÚ — Semana objetivo ISO ${meta.week} / ${meta.year}`);
+  lines.push(`MENÚ — ${meta.label}`);
   lines.push(`(Fijo durante la semana. Desde sábado: menú de la siguiente semana.)`);
   lines.push("—".repeat(44));
   for(const b of BLOCKS){
@@ -415,10 +503,13 @@ function formatMenuText(meta, data){
 }
 
 function render(meta, data){
-  els.weekBadge.textContent = `Semana objetivo: ${meta.week} (${meta.year})`;
+  els.weekBadge.textContent = meta.label;
   els.menuBox.textContent = formatMenuText(meta, data);
 }
 
+// =====================
+//  Storage
+// =====================
 function loadSaved(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -428,51 +519,37 @@ function loadSaved(){
 }
 
 function save(meta, blocks){
-  const obj = { meta, blocks, at: Date.now() };
+  const obj = {
+    meta: { key: meta.key, label: meta.label, year: meta.year },
+    blocks,
+    at: Date.now()
+  };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
   return obj;
 }
 
-function isSameMeta(a,b){
-  return a && b && a.week === b.week && a.year === b.year;
+function isSameMeta(savedMeta, meta){
+  return savedMeta && meta && savedMeta.key === meta.key;
 }
 
+// =====================
+//  Generator
+// =====================
 function makeSeed(meta, salt=0){
-  const base = (meta.year * 1000 + meta.week) >>> 0;
+  const base = hashStringToUint(meta.key);
   return (base * 31 + (salt >>> 0)) >>> 0;
 }
 
-function proteinsByCategory(){
-  const map = new Map();
-  for(const p of PROTEINS){
-    if(!map.has(p.cat)) map.set(p.cat, []);
-    map.get(p.cat).push(p);
-  }
-  return map;
-}
-
-function sidesByCategory(){
-  const map = new Map();
-  for(const s of SIDES){
-    if(!map.has(s.cat)) map.set(s.cat, []);
-    map.get(s.cat).push(s);
-  }
-  return map;
-}
-
-function pickTwoSidesDifferentCats(rng){
-  const map = sidesByCategory();
-  const cats = Array.from(map.keys());
-  const chosenCats = shuffleInPlace([...cats], rng).slice(0, 2);
-  const a = pickOne(map.get(chosenCats[0]), rng).name;
-  const b = pickOne(map.get(chosenCats[1]), rng).name;
-  return [a, b];
-}
-
+// proteínas con categoría única por semana (entre 3 bloques)
 function generateAllBlocksUniqueProteinCats(meta, salt=0){
   const rng = seededRng(makeSeed(meta, salt));
   const pMap = proteinsByCategory();
   const pCats = Array.from(pMap.keys());
+
+  if(pCats.length < BLOCKS.length){
+    throw new Error("No hay suficientes categorías de proteína para 3 bloques.");
+  }
+
   const chosenProteinCats = shuffleInPlace([...pCats], rng).slice(0, BLOCKS.length);
 
   const blocks = {};
@@ -480,7 +557,8 @@ function generateAllBlocksUniqueProteinCats(meta, salt=0){
     const b = BLOCKS[i];
     const cat = chosenProteinCats[i];
     const proteinObj = pickOne(pMap.get(cat), rng);
-    const sides = pickTwoSidesDifferentCats(rng);
+    const sides = pickCookedAndRaw(rng); // 1 cocido + 1 crudo
+
     blocks[b.key] = { protein: proteinObj.name, proteinCat: cat, sides };
   }
   return blocks;
@@ -503,17 +581,22 @@ function regenerateSingleBlockKeepingUniqueProteinCats(meta, existingBlocks, blo
 
   const chosenCat = availableCats[0];
   const proteinObj = pickOne(pMap.get(chosenCat), rng);
-  const sides = pickTwoSidesDifferentCats(rng);
+  const sides = pickCookedAndRaw(rng);
 
   return { protein: proteinObj.name, proteinCat: chosenCat, sides };
 }
 
-function currentTargetMeta(){
-  return targetWeekInfo(new Date());
+// =====================
+//  Actions
+// =====================
+function confirmDanger(message){
+  return window.confirm(message);
 }
 
 function ensureMenuLoaded(){
   const meta = currentTargetMeta();
+  els.weekBadge.textContent = meta.label;
+
   const saved = loadSaved();
   const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
 
@@ -525,15 +608,10 @@ function ensureMenuLoaded(){
     return;
   }
 
-  els.weekBadge.textContent = `Semana objetivo: ${meta.week} (${meta.year})`;
   els.menuBox.textContent =
-    `No hay menú guardado para la semana objetivo (${meta.week}/${meta.year}).\n` +
+    `No hay menú guardado para: ${meta.label}\n` +
     `Pulsa "Generar menú" para crearlo.`;
   setStatus("Listo para generar un menú nuevo.", false);
-}
-
-function confirmDanger(message){
-  return window.confirm(message);
 }
 
 function actionGenerateIfEmpty(){
@@ -544,7 +622,7 @@ function actionGenerateIfEmpty(){
   if(hasMenu){
     render(meta, saved);
     setHasMenuUI(true);
-    setStatus("Ya existe un menú para esta semana. Si deseas cambiarlo, usa 'Rehacer'.", false);
+    setStatus("Ya existe un menú para estas fechas. Si deseas cambiarlo, usa 'Rehacer'.", false);
     return;
   }
 
@@ -586,7 +664,7 @@ function actionRedoBlock(blockKey){
     return;
   }
 
-  let blocks = {...saved.blocks};
+  const blocks = {...saved.blocks};
   blocks[blockKey] = regenerateSingleBlockKeepingUniqueProteinCats(meta, blocks, blockKey);
 
   const obj = save(meta, blocks);
@@ -611,13 +689,15 @@ async function copyToClipboard(){
   }
 }
 
-els.btnGenerate.addEventListener("click", actionGenerateIfEmpty);
-els.btnRedoAll.addEventListener("click", actionRedoAll);
-els.btnRedoLM.addEventListener("click", () => actionRedoBlock("LM"));
-els.btnRedoMJ.addEventListener("click", () => actionRedoBlock("MJ"));
-els.btnRedoV.addEventListener("click",  () => actionRedoBlock("V"));
-els.btnCopy.addEventListener("click", copyToClipboard);
+// Wire
+document.getElementById("btnGenerate").addEventListener("click", actionGenerateIfEmpty);
+document.getElementById("btnRedoAll").addEventListener("click", actionRedoAll);
+document.getElementById("btnRedoLM").addEventListener("click", () => actionRedoBlock("LM"));
+document.getElementById("btnRedoMJ").addEventListener("click", () => actionRedoBlock("MJ"));
+document.getElementById("btnRedoV").addEventListener("click",  () => actionRedoBlock("V"));
+document.getElementById("btnCopy").addEventListener("click", copyToClipboard);
 
+// Init
 ensureMenuLoaded();
 </script>
 </body>
