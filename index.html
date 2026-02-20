@@ -1,255 +1,540 @@
+```html
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Menú semanal</title>
+  <title>Menú Semanal Automático</title>
 
   <style>
+    /* ==========================================================================
+      MENÚ SEMANAL — UI + interacción (sin cambiar reglas / data)
+      - Mantengo tu lógica de generación, storage y reglas:
+        (proteína por categoría no repetida entre bloques, 1 cocido + 1 crudo, etc.)
+      - Solo cambio presentación y añado la interacción que muestran tus diseños:
+        1) Pantalla inicial con botón grande "Generar menú"
+        2) Loader pantalla completa al generar / rehacer todo
+        3) Vista "Menú generado" con cards por bloque + "Copiar menú"
+        4) Modal de "Rehacer platillo" con 3 opciones (guisado / guarnición 1 / guarnición 2)
+        5) Loader sobre opción seleccionada + confirmación "¡Platillo actualizado!"
+      ========================================================================== */
+
     :root{
-      --bg: #f4f6f8;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --accent: #2563eb;
-      --accentSoft: #e8f0ff;
-      --border: #d1d5db;
-      --shadow: 0 10px 28px rgba(0,0,0,.08);
+      --bg:#ffffff;
+      --text:#0b0b0f;
+      --muted:#6b7280;
 
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
-      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --border:#e5e7eb;
+      --card:#ffffff;
+      --cardSoft:#f8fafc;
+
+      --blue:#0b63ff;
+      --blueSoft:rgba(11,99,255,.10);
+
+      --shadow:0 10px 30px rgba(15,23,42,.10);
+
+      --r-xl:22px;
+      --r-lg:18px;
+      --r-md:14px;
+
+      --container: 980px;
+
+      --h1: clamp(44px, 7vw, 72px);
+      --h2: clamp(26px, 4vw, 34px);
+      --p1: clamp(18px, 3vw, 26px);
+      --p2: 20px;
     }
 
-    html,body{
-      height:100%;
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
       margin:0;
-      background: var(--bg);
+      background:var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Display", "SF Pro Text",
+        Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Layout */
+    .page{
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 26px 18px 70px;
+    }
+
+    .title{
+      margin:0;
+      font-size: var(--h1);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle{
+      margin: 16px 0 0;
+      font-size: var(--p1);
       color: var(--text);
-      font-family: var(--sans);
+      font-weight: 650;
+      letter-spacing: -0.01em;
     }
 
-    .wrap{
-      min-height:100%;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      padding:16px;
+    /* Card container (como en imagen 1 y 3/4) */
+    .shell{
+      margin-top: 26px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: var(--r-xl);
+      padding: 22px;
+      box-shadow: 0 0 0 rgba(0,0,0,0);
     }
 
-    .card{
-      width:100%;
-      max-width:560px;
-      background: var(--card);
-      border-radius:18px;
-      box-shadow: var(--shadow);
-      padding:16px;
-    }
-
-    header{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-start;
-    }
-
-    /* ✅ +3 */
-    h1{
-      margin:0;
-      font-size:25px;
-      font-weight:800;
-      letter-spacing:.2px;
-    }
-
-    /* ✅ +3 */
-    .sub{
-      margin:8px 0 0;
-      font-size:18px;
-      color: var(--muted);
-      line-height:1.45;
-    }
-
-    .badge{
-      font-size:13px;
-      color: var(--accent);
-      background: var(--accentSoft);
-      padding:8px 12px;
-      border-radius:999px;
-      white-space:nowrap;
-      font-weight:700;
-    }
-
-    .panel{
-      margin-top:14px;
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:14px;
-      background:#fafafa;
-    }
-
-    .panelHeader{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:10px;
-    }
-
-    /* ✅ +3 */
-    .panel h2{
-      margin:0;
-      font-size:20px;
-      font-weight:700;
-    }
-
-    /* ✅ +3 */
-    button{
-      border:none;
-      background: var(--accent);
-      color:white;
-      border-radius:14px;
-      padding:14px 12px;
-      font-size:19px;
-      font-weight:700;
+    /* Buttons */
+    .btn{
+      border: 1px solid transparent;
+      background: var(--blue);
+      color:#fff;
+      border-radius: 18px;
+      padding: 18px 18px;
+      font-size: 22px;
+      font-weight: 800;
       cursor:pointer;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:8px;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform .05s ease, opacity .15s ease, background .15s ease, color .15s ease, border-color .15s ease;
-    }
-
-    button:active{ transform: scale(.985); }
-
-    .ghost{
-      background: white;
-      color: var(--accent);
-      border:1px solid var(--border);
-    }
-
-    button:disabled{
-      opacity: .45;
-      cursor: not-allowed;
-      transform: none;
-    }
-    button.ghost:disabled{
-      background: #f8fafc;
-      color: #94a3b8;
-      border-color: #e2e8f0;
-      opacity: 1;
-    }
-    button:not(.ghost):disabled{
-      background: #94a3b8;
-      opacity: 1;
-    }
-
-    /* ✅ +3 */
-    .menuText{
-      font-family: var(--mono);
-      font-size:18px;
-      line-height:1.65;
-      white-space:pre-wrap;
-      padding:14px;
-      border-radius:14px;
-      border:1px dashed var(--border);
-      background:white;
-      min-height:300px;
-    }
-
-    /* ✅ +3 */
-    .statusBar{
-      margin-top:10px;
-      padding:12px 14px;
-      border-radius:12px;
-      font-size:17px;
-      background:#f1f5f9;
-      color: var(--muted);
-      line-height:1.35;
-    }
-    .statusBar.ok{
-      background: var(--accentSoft);
-      color: var(--accent);
-      font-weight:700;
-    }
-
-    .primaryRow{
-      display:flex;
       gap:10px;
-      margin-top:12px;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .05s ease, opacity .15s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
     }
-    .primaryRow button{ flex:1; }
+    .btn:active{ transform: scale(.985); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
 
-    .otherSection{
-      margin-top:18px;
-      padding-top:14px;
-      border-top:1px solid var(--border);
+    .btn-ghost{
+      background: #fff;
+      color: var(--blue);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover{ border-color: rgba(11,99,255,.35); }
+
+    .btn-wide{ width: 100%; }
+
+    /* Initial area */
+    .centerRow{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding: 10px 0 0;
+    }
+    .bigCTA{
+      width: min(640px, 100%);
+      border-radius: 28px;
+      padding: 26px 22px;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    /* Header row inside "Menú generado" */
+    .menuHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .menuHeader h2{
+      margin:0;
+      font-size: var(--h2);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .copyBtn{
+      font-size: 22px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      display:inline-flex;
+      gap:10px;
+    }
+    .copyIcon{
+      width: 22px;
+      height: 22px;
+      display:inline-block;
+      border: 2px solid currentColor;
+      border-radius: 4px;
+      position:relative;
+      transform: translateY(1px);
+    }
+    .copyIcon::after{
+      content:"";
+      position:absolute;
+      width: 22px;
+      height: 22px;
+      border: 2px solid currentColor;
+      border-radius: 4px;
+      left: 7px;
+      top: -7px;
+      background: transparent;
+    }
+
+    /* Blocks (cards por sección) */
+    .blocks{
+      display:flex;
+      flex-direction:column;
+      gap: 18px;
+    }
+
+    .blockCard{
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      background: var(--card);
+      padding: 18px;
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+    }
+
+    .blockTitle{
+      margin:0 0 10px;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .lines{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      padding: 4px 0 14px;
+      font-size: 24px;
+    }
+
+    .line{
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+      line-height: 1.25;
+    }
+    .emoji{
+      width: 28px;
+      flex: 0 0 28px;
+      text-align:center;
+      transform: translateY(2px);
+    }
+
+    .rehacerWrap{
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: var(--r-lg);
+      padding: 14px;
+    }
+    .rehacerBtn{
+      width: 100%;
+      background: #fff;
+      color: var(--blue);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 16px;
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    /* "Otras opciones" */
+    .other{
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
     }
     .otherTitle{
-      margin:0 0 10px;
-      font-size:18px; /* también +3 (venía 15) */
-      color: var(--muted);
-      font-weight:700;
-    }
-    .otherRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .otherRow button{
-      flex:1;
-      min-width:160px;
+      margin:0 0 14px;
+      font-size: 28px;
+      font-weight: 900;
+      color: #9aa3b2;
+      letter-spacing: -0.02em;
     }
 
-    #btnCopy{
-      padding:10px 12px;
-      font-size:18px; /* ajustado para que no se vea chico vs botones */
-      border-radius:12px;
+    .redoAllBtn{
+      width: 100%;
+      padding: 18px 16px;
+      font-size: 26px;
+      font-weight: 900;
+      border-radius: 18px;
+      background:#fff;
+      color: var(--blue);
+      border: 1px solid var(--border);
+    }
+
+    /* Loader full screen (imagen 2) */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,.92);
+      display:none;
+      z-index: 50;
+      align-items:center;
+      justify-content:center;
+      padding: 24px;
+    }
+    .overlay.show{ display:flex; }
+
+    .loaderBox{
+      width: min(520px, 100%);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: 18px;
+    }
+
+    .spin{
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 7px solid rgba(11,99,255,.18);
+      border-top-color: var(--blue);
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin{ to{ transform: rotate(360deg); } }
+
+    .loaderText{
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    /* Modal (imagen 5/6/7) */
+    .modalBackdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.35);
+      display:none;
+      z-index: 60;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+    .modalBackdrop.show{ display:flex; }
+
+    .modal{
+      width: min(760px, 100%);
+      background: #fff;
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,.08);
+      overflow:hidden;
+    }
+
+    .modalTop{
+      padding: 22px 22px 0;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 16px;
+    }
+
+    .modalTitle{
+      margin:0;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+
+    .closeX{
+      border:none;
+      background:transparent;
+      color: var(--blue);
+      cursor:pointer;
+      font-size: 34px;
+      line-height: 1;
+      padding: 6px 10px;
+      border-radius: 12px;
+    }
+    .closeX:active{ background: var(--tap); }
+
+    .modalBody{
+      padding: 10px 22px 22px;
+    }
+
+    .modalBlockTitle{
+      margin: 18px 0 10px;
+      font-size: 26px;
+      font-weight: 900;
+    }
+
+    .modalLines{
+      font-size: 24px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .modalActions{
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+      padding-top: 8px;
+    }
+
+    .modalActionBtn{
+      width: 100%;
+      background: #fff;
+      color: var(--blue);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 16px;
+      font-size: 26px;
+      font-weight: 900;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 12px;
+    }
+
+    .miniSpinner{
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 3px solid rgba(11,99,255,.18);
+      border-top-color: var(--blue);
+      animation: spin .9s linear infinite;
+      display:none;
+    }
+    .modalActionBtn.loading .miniSpinner{ display:inline-block; }
+    .modalActionBtn.loading .label{ opacity:.7; }
+
+    /* Confirmación (imagen 7) */
+    .confirmView{
+      display:none;
+      padding: 34px 22px 30px;
+      text-align:center;
+    }
+    .confirmView.show{ display:block; }
+
+    .confirmTitle{
+      margin:0;
+      font-size: 34px;
+      font-weight: 900;
+      text-align:left;
+      padding: 0 0 18px;
+    }
+    .checkBig{
+      font-size: 86px;
+      font-weight: 900;
+      margin: 12px 0 0;
+    }
+
+    /* Util */
+    .hide{ display:none !important; }
+
+    /* Responsive tweaks */
+    @media (max-width: 520px){
+      .bigCTA{ font-size: 26px; padding: 22px 18px; }
+      .menuHeader h2{ font-size: 28px; }
+      .copyBtn{ font-size: 20px; }
+      .blockTitle{ font-size: 24px; }
+      .lines{ font-size: 22px; }
+      .rehacerBtn{ font-size: 22px; }
+      .otherTitle{ font-size: 24px; }
+      .redoAllBtn{ font-size: 22px; }
+      .modalTitle{ font-size: 28px; }
+      .modalActionBtn{ font-size: 22px; }
     }
   </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="card">
+  <!-- Loader global (Imagen 2) -->
+  <div class="overlay" id="globalLoader" aria-hidden="true">
+    <div class="loaderBox">
+      <div class="spin" aria-hidden="true"></div>
+      <div class="loaderText" id="globalLoaderText">Generando menú...</div>
+    </div>
+  </div>
 
-    <header>
-      <div>
-        <h1>Menú semanal</h1>
-      </div>
-      <div class="badge" id="weekBadge">—</div>
-    </header>
-
-    <section class="panel">
-      <div class="panelHeader">
-        <h2>Menú generado</h2>
-        <button id="btnCopy" class="ghost">Copiar</button>
-      </div>
-
-      <div class="menuText" id="menuBox">Cargando…</div>
-
-      <div id="status" class="statusBar">—</div>
-
-      <div class="primaryRow">
-        <button id="btnGenerate">Generar menú</button>
-        <button id="btnRedoAll" class="ghost" disabled>Rehacer todo</button>
+  <!-- Modal rehacer (Imagen 5/6/7) -->
+  <div class="modalBackdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modalTop">
+        <h3 class="modalTitle" id="modalTitle">¿Qué platillo deseas rehacer?</h3>
+        <button class="closeX" id="modalClose" aria-label="Cerrar">×</button>
       </div>
 
-      <div class="otherSection" id="otherSection" style="display:none;">
-        <p class="otherTitle">Otras opciones</p>
-        <div class="otherRow">
-          <button id="btnRedoLM" class="ghost" disabled>Rehacer Lunes - Martes</button>
-          <button id="btnRedoMJ" class="ghost" disabled>Rehacer Miércoles - Jueves</button>
-          <button id="btnRedoV" class="ghost" disabled>Rehacer Viernes</button>
+      <div class="modalBody">
+        <!-- Vista normal (opciones) -->
+        <div id="modalContent">
+          <div class="modalBlockTitle" id="modalBlockHeading">—</div>
+          <div class="modalLines" id="modalLines"></div>
+
+          <div class="modalActions">
+            <button class="modalActionBtn" id="btnRedoProtein">
+              <span class="miniSpinner" aria-hidden="true"></span>
+              <span class="label">↻ Rehacer guisado</span>
+            </button>
+            <button class="modalActionBtn" id="btnRedoCooked">
+              <span class="miniSpinner" aria-hidden="true"></span>
+              <span class="label">↻ Rehacer guarnición 1</span>
+            </button>
+            <button class="modalActionBtn" id="btnRedoRaw">
+              <span class="miniSpinner" aria-hidden="true"></span>
+              <span class="label">↻ Rehacer guarnición 2</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Vista confirmación (Imagen 7) -->
+        <div class="confirmView" id="modalConfirm">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+            <h3 class="confirmTitle">¡Platillo actualizado!</h3>
+            <button class="closeX" id="modalClose2" aria-label="Cerrar">×</button>
+          </div>
+          <div class="checkBig">✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="page">
+    <h1 class="title">Menú Semanal<br/>Automático</h1>
+    <p class="subtitle" id="weekLabel">Semana —</p>
+
+    <section class="shell">
+      <!-- Pantalla inicial (Imagen 1): solo botón grande -->
+      <div id="emptyState">
+        <div class="centerRow">
+          <button class="btn bigCTA" id="btnGenerate">Generar menú</button>
+        </div>
+      </div>
+
+      <!-- Menú generado (Imagen 3/4) -->
+      <div id="menuState" class="hide">
+        <div class="menuHeader">
+          <h2>Menú generado</h2>
+          <button class="btn btn-ghost copyBtn" id="btnCopy" title="Copiar menú">
+            <span class="copyIcon" aria-hidden="true"></span>
+            Copiar menú
+          </button>
+        </div>
+
+        <div class="blocks" id="menuSections"></div>
+
+        <div class="other">
+          <div class="otherTitle">Otras opciones</div>
+          <button class="btn btn-ghost redoAllBtn" id="btnRedoAll">Rehacer todo</button>
         </div>
       </div>
     </section>
-
-  </div>
-</div>
+  </main>
 
 <script>
+/* ==========================================================================
+  IMPORTANTE:
+  - Reutilizo tus datos y reglas.
+  - Mantengo el STORAGE_KEY y el esquema blocks: { LM:{protein,proteinCat,sides[2]}, ... }
+  - Solo cambié el render (ya no es un textarea) y agregué modal + loaders.
+========================================================================== */
+
 // =====================
-//  PROTEÍNAS (actualizadas)
+//  PROTEÍNAS (tuyas)
 //  Regla: categoría NO se repite entre LM / MJ / V
 // =====================
 const PROTEINS = [
@@ -287,7 +572,7 @@ const PROTEINS = [
 ];
 
 // =====================
-//  COMPLEMENTOS (divididos)
+//  COMPLEMENTOS (tuyos)
 //  Regla: 1 cocido + 1 crudo por bloque
 // =====================
 
@@ -337,6 +622,8 @@ const RAW_SIDES = [
 ];
 
 // =====================
+//  Constantes (tuyas)
+// =====================
 const STORAGE_KEY = "menu_week_blocks_v9";
 const BLOCKS = [
   { key: "LM", title: "Lunes y Martes" },
@@ -344,21 +631,44 @@ const BLOCKS = [
   { key: "V",  title: "Viernes" }
 ];
 
+// =====================
+//  DOM refs
+// =====================
 const els = {
-  weekBadge: document.getElementById("weekBadge"),
-  menuBox: document.getElementById("menuBox"),
-  status: document.getElementById("status"),
-  otherSection: document.getElementById("otherSection"),
+  weekLabel: document.getElementById("weekLabel"),
+  emptyState: document.getElementById("emptyState"),
+  menuState: document.getElementById("menuState"),
+  menuSections: document.getElementById("menuSections"),
+
   btnGenerate: document.getElementById("btnGenerate"),
   btnRedoAll: document.getElementById("btnRedoAll"),
-  btnRedoLM: document.getElementById("btnRedoLM"),
-  btnRedoMJ: document.getElementById("btnRedoMJ"),
-  btnRedoV: document.getElementById("btnRedoV"),
   btnCopy: document.getElementById("btnCopy"),
+
+  globalLoader: document.getElementById("globalLoader"),
+  globalLoaderText: document.getElementById("globalLoaderText"),
+
+  modalBackdrop: document.getElementById("modalBackdrop"),
+  modalClose: document.getElementById("modalClose"),
+  modalClose2: document.getElementById("modalClose2"),
+  modalTitle: document.getElementById("modalTitle"),
+  modalBlockHeading: document.getElementById("modalBlockHeading"),
+  modalLines: document.getElementById("modalLines"),
+
+  modalContent: document.getElementById("modalContent"),
+  modalConfirm: document.getElementById("modalConfirm"),
+
+  btnRedoProtein: document.getElementById("btnRedoProtein"),
+  btnRedoCooked: document.getElementById("btnRedoCooked"),
+  btnRedoRaw: document.getElementById("btnRedoRaw"),
 };
 
+// Estado UI
+let currentMeta = null;
+let currentSaved = null;
+let modalBlockKey = null;
+
 // =====================
-//  Fechas (Lun–Vie). Sábado => siguiente semana.
+//  Fechas (tuyas)
 // =====================
 const MONTHS_ES = [
   "Enero","Febrero","Marzo","Abril","Mayo","Junio",
@@ -373,35 +683,29 @@ function startOfWeekMonday(date){
   d.setDate(d.getDate() + diffToMonday);
   return d;
 }
-
 function addDays(date, days){
   const d = new Date(date);
   d.setDate(d.getDate() + days);
   return d;
 }
-
 function targetWeekRange(now = new Date()){
   const base = new Date(now);
-  if(base.getDay() === 6){ base.setDate(base.getDate() + 7); }
+  if(base.getDay() === 6){ base.setDate(base.getDate() + 7); } // sábado => siguiente semana
   const monday = startOfWeekMonday(base);
   const friday = addDays(monday, 4);
   return { monday, friday };
 }
-
-/* ✅ Maneja cambio de mes */
 function formatRangeLabel(monday, friday){
   const d1 = monday.getDate();
   const d2 = friday.getDate();
   const m1 = MONTHS_ES[monday.getMonth()];
   const m2 = MONTHS_ES[friday.getMonth()];
   const year = monday.getFullYear();
-
   if(monday.getMonth() === friday.getMonth()){
-    return `${d1} a ${d2} de ${m1} ${year}`;
+    return `Semana del ${d1} a ${d2} de ${m1} ${year}`;
   }
-  return `${d1} de ${m1} a ${d2} de ${m2} ${year}`;
+  return `Semana del ${d1} de ${m1} a ${d2} de ${m2} ${year}`;
 }
-
 function currentTargetMeta(){
   const { monday, friday } = targetWeekRange(new Date());
   const key = `${monday.getFullYear()}-${String(monday.getMonth()+1).padStart(2,'0')}-${String(monday.getDate()).padStart(2,'0')}`;
@@ -409,21 +713,8 @@ function currentTargetMeta(){
 }
 
 // =====================
-//  UI helpers
+//  RNG / helpers (tuyos)
 // =====================
-function setStatus(msg, ok=false){
-  els.status.textContent = msg;
-  els.status.className = "statusBar" + (ok ? " ok" : "");
-}
-
-function setHasMenuUI(hasMenu){
-  els.otherSection.style.display = hasMenu ? "block" : "none";
-  els.btnRedoAll.disabled = !hasMenu;
-  els.btnRedoLM.disabled = !hasMenu;
-  els.btnRedoMJ.disabled = !hasMenu;
-  els.btnRedoV.disabled = !hasMenu;
-}
-
 function seededRng(seed){
   let x = seed >>> 0;
   return function(){
@@ -431,7 +722,6 @@ function seededRng(seed){
     return x / 4294967296;
   };
 }
-
 function hashStringToUint(str){
   let h = 2166136261 >>> 0;
   for(let i=0; i<str.length; i++){
@@ -440,11 +730,9 @@ function hashStringToUint(str){
   }
   return h >>> 0;
 }
-
 function pickOne(arr, rng){
   return arr[Math.floor(rng() * arr.length)];
 }
-
 function shuffleInPlace(arr, rng){
   for(let i = arr.length - 1; i > 0; i--){
     const j = Math.floor(rng() * (i + 1));
@@ -452,7 +740,6 @@ function shuffleInPlace(arr, rng){
   }
   return arr;
 }
-
 function proteinsByCategory(){
   const map = new Map();
   for(const p of PROTEINS){
@@ -461,8 +748,6 @@ function proteinsByCategory(){
   }
   return map;
 }
-
-/* 1 cocido + 1 crudo */
 function pickCookedAndRaw(rng){
   const cooked = pickOne(COOKED_SIDES, rng);
   let raw = pickOne(RAW_SIDES, rng);
@@ -473,29 +758,8 @@ function pickCookedAndRaw(rng){
   return [cooked.name, raw.name];
 }
 
-function comboToText(blockTitle, combo){
-  return `${blockTitle}:\n🍗/🥩 ${combo.protein}\n🍲 (Cocido) ${combo.sides[0]}\n🥗 (Crudo) ${combo.sides[1]}\n`;
-}
-
-function formatMenuText(meta, data){
-  const lines = [];
-  lines.push(`MENÚ — ${meta.label}`);
-  lines.push(`(Fijo durante la semana. Desde sábado: menú de la siguiente semana.)`);
-  lines.push("—".repeat(44));
-  for(const b of BLOCKS){
-    const c = data.blocks?.[b.key];
-    if(c){ lines.push(comboToText(b.title, c)); }
-  }
-  return lines.join("\n").trim();
-}
-
-function render(meta, data){
-  els.weekBadge.textContent = meta.label;
-  els.menuBox.textContent = formatMenuText(meta, data);
-}
-
 // =====================
-//  Storage
+//  Storage (tuyo)
 // =====================
 function loadSaved(){
   try{
@@ -504,7 +768,6 @@ function loadSaved(){
     return JSON.parse(raw);
   }catch{ return null; }
 }
-
 function save(meta, blocks){
   const obj = {
     meta: { key: meta.key, label: meta.label, year: meta.year },
@@ -514,24 +777,21 @@ function save(meta, blocks){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
   return obj;
 }
-
 function isSameMeta(savedMeta, meta){
   return savedMeta && meta && savedMeta.key === meta.key;
 }
 
 // =====================
-//  Generator
+//  Generator (tuyo)
 // =====================
 function makeSeed(meta, salt=0){
   const base = hashStringToUint(meta.key);
   return (base * 31 + (salt >>> 0)) >>> 0;
 }
-
 function generateAllBlocksUniqueProteinCats(meta, salt=0){
   const rng = seededRng(makeSeed(meta, salt));
   const pMap = proteinsByCategory();
   const pCats = Array.from(pMap.keys());
-
   const chosenProteinCats = shuffleInPlace([...pCats], rng).slice(0, BLOCKS.length);
 
   const blocks = {};
@@ -544,7 +804,6 @@ function generateAllBlocksUniqueProteinCats(meta, salt=0){
   }
   return blocks;
 }
-
 function regenerateSingleBlockKeepingUniqueProteinCats(meta, existingBlocks, blockKey){
   const usedCats = new Set();
   for(const k of Object.keys(existingBlocks)){
@@ -567,98 +826,303 @@ function regenerateSingleBlockKeepingUniqueProteinCats(meta, existingBlocks, blo
   return { protein: proteinObj.name, proteinCat: chosenCat, sides };
 }
 
-// =====================
-//  Actions
-// =====================
-function confirmDanger(message){
-  return window.confirm(message);
+/* ==========================================================================
+  NUEVO (UI expected): rehacer por componente dentro del bloque
+  - NO cambia reglas: proteína sigue respetando "cat única entre bloques".
+  - Guarnición 1 = cocido (COOKED_SIDES)
+  - Guarnición 2 = crudo (RAW_SIDES)
+========================================================================== */
+function regenerateProteinOnlyKeepingUniqueCats(meta, existingBlocks, blockKey){
+  const usedCats = new Set();
+  for(const k of Object.keys(existingBlocks)){
+    if(k !== blockKey && existingBlocks[k]?.proteinCat) usedCats.add(existingBlocks[k].proteinCat);
+  }
+  const pMap = proteinsByCategory();
+  let availableCats = Array.from(pMap.keys()).filter(c => !usedCats.has(c));
+  if(!availableCats.length) availableCats = Array.from(pMap.keys());
+
+  const rng = seededRng(makeSeed(meta, Date.now() & 0xffffffff));
+  availableCats = shuffleInPlace(availableCats, rng);
+
+  const chosenCat = availableCats[0];
+  const proteinObj = pickOne(pMap.get(chosenCat), rng);
+
+  const prev = existingBlocks[blockKey];
+  return { ...prev, protein: proteinObj.name, proteinCat: chosenCat };
+}
+function regenerateCookedOnly(meta, existingBlocks, blockKey){
+  const rng = seededRng(makeSeed(meta, Date.now() & 0xffffffff));
+  const prev = existingBlocks[blockKey];
+  const cooked = pickOne(COOKED_SIDES, rng).name;
+  return { ...prev, sides: [cooked, prev.sides[1]] };
+}
+function regenerateRawOnly(meta, existingBlocks, blockKey){
+  const rng = seededRng(makeSeed(meta, Date.now() & 0xffffffff));
+  const prev = existingBlocks[blockKey];
+  const raw = pickOne(RAW_SIDES, rng).name;
+  return { ...prev, sides: [prev.sides[0], raw] };
 }
 
+// =====================
+//  Render (nuevo)
+// =====================
+function setWeekLabel(meta){
+  els.weekLabel.textContent = meta.label;
+}
+
+function showEmptyState(){
+  els.emptyState.classList.remove("hide");
+  els.menuState.classList.add("hide");
+}
+function showMenuState(){
+  els.emptyState.classList.add("hide");
+  els.menuState.classList.remove("hide");
+}
+
+function blockLineRow(emoji, text){
+  const div = document.createElement("div");
+  div.className = "line";
+  div.innerHTML = `<div class="emoji">${emoji}</div><div>${escapeHtml(text)}</div>`;
+  return div;
+}
+
+function renderBlocks(blocks){
+  els.menuSections.innerHTML = "";
+  for(const b of BLOCKS){
+    const data = blocks[b.key];
+    if(!data) continue;
+
+    const card = document.createElement("div");
+    card.className = "blockCard";
+
+    const title = document.createElement("h3");
+    title.className = "blockTitle";
+    title.textContent = `${b.title}:`;
+    card.appendChild(title);
+
+    const lines = document.createElement("div");
+    lines.className = "lines";
+    // En tu diseño: 3 líneas con emojis. Aquí:
+    // 1) 🍗 = proteína (guisado)
+    // 2) 🍲 = guarnición 1 (cocido)
+    // 3) 🥗 = guarnición 2 (crudo)
+    lines.appendChild(blockLineRow("🍗", data.protein));
+    lines.appendChild(blockLineRow("🍲", data.sides?.[0] ?? "—"));
+    lines.appendChild(blockLineRow("🥗", data.sides?.[1] ?? "—"));
+    card.appendChild(lines);
+
+    const wrap = document.createElement("div");
+    wrap.className = "rehacerWrap";
+
+    const btn = document.createElement("button");
+    btn.className = "btn rehacerBtn";
+    btn.type = "button";
+    btn.textContent = "↻ Rehacer platillo";
+    btn.addEventListener("click", () => openModal(b.key));
+    wrap.appendChild(btn);
+
+    card.appendChild(wrap);
+
+    els.menuSections.appendChild(card);
+  }
+}
+
+function renderAll(meta, saved){
+  setWeekLabel(meta);
+  if(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length){
+    renderBlocks(saved.blocks);
+    showMenuState();
+  }else{
+    showEmptyState();
+  }
+}
+
+// Texto para copiar (mantiene tu idea: texto completo del menú)
+function formatMenuTextForCopy(meta, blocks){
+  const lines = [];
+  lines.push(`MENÚ — ${meta.label}`);
+  lines.push("—".repeat(40));
+  for(const b of BLOCKS){
+    const c = blocks?.[b.key];
+    if(!c) continue;
+    lines.push(`${b.title}:`);
+    lines.push(`- Guisado: ${c.protein}`);
+    lines.push(`- Guarnición 1: ${c.sides?.[0] ?? "—"}`);
+    lines.push(`- Guarnición 2: ${c.sides?.[1] ?? "—"}`);
+    lines.push("");
+  }
+  return lines.join("\n").trim();
+}
+
+// =====================
+//  Loader global (imagen 2)
+// =====================
+function showGlobalLoader(text="Generando menú..."){
+  els.globalLoaderText.textContent = text;
+  els.globalLoader.classList.add("show");
+  els.globalLoader.setAttribute("aria-hidden", "false");
+}
+function hideGlobalLoader(){
+  els.globalLoader.classList.remove("show");
+  els.globalLoader.setAttribute("aria-hidden", "true");
+}
+
+// =====================
+//  Modal (imagen 5/6/7)
+// =====================
+function openModal(blockKey){
+  modalBlockKey = blockKey;
+
+  // Reset modal views
+  els.modalConfirm.classList.remove("show");
+  els.modalContent.classList.remove("hide");
+
+  // Reset buttons loading/disabled
+  setModalButtonsEnabled(true);
+  setModalButtonLoading(null);
+
+  const blockTitle = BLOCKS.find(b => b.key === blockKey)?.title ?? "—";
+  const data = currentSaved?.blocks?.[blockKey];
+
+  els.modalTitle.textContent = `¿Qué platillo deseas rehacer del ${blockTitle}?`;
+  els.modalBlockHeading.textContent = `${blockTitle}:`;
+
+  // Lines
+  els.modalLines.innerHTML = "";
+  if(data){
+    els.modalLines.appendChild(blockLineRow("🍗", data.protein));
+    els.modalLines.appendChild(blockLineRow("🍲", data.sides?.[0] ?? "—"));
+    els.modalLines.appendChild(blockLineRow("🥗", data.sides?.[1] ?? "—"));
+  }
+
+  els.modalBackdrop.classList.add("show");
+  els.modalBackdrop.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(){
+  els.modalBackdrop.classList.remove("show");
+  els.modalBackdrop.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  modalBlockKey = null;
+}
+
+function setModalButtonsEnabled(enabled){
+  els.btnRedoProtein.disabled = !enabled;
+  els.btnRedoCooked.disabled = !enabled;
+  els.btnRedoRaw.disabled = !enabled;
+}
+function setModalButtonLoading(which /* "protein"|"cooked"|"raw"|null */){
+  const map = {
+    protein: els.btnRedoProtein,
+    cooked: els.btnRedoCooked,
+    raw: els.btnRedoRaw
+  };
+  for(const k of Object.keys(map)){
+    map[k].classList.toggle("loading", k === which);
+  }
+}
+function showModalConfirmation(){
+  els.modalContent.classList.add("hide");
+  els.modalConfirm.classList.add("show");
+}
+
+// =====================
+//  Actions (con loaders)
+// =====================
 function ensureMenuLoaded(){
-  const meta = currentTargetMeta();
-  els.weekBadge.textContent = meta.label;
+  currentMeta = currentTargetMeta();
+  setWeekLabel(currentMeta);
 
   const saved = loadSaved();
-  const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
+  const hasMenu = !!(saved && isSameMeta(saved.meta, currentMeta) && saved.blocks && Object.keys(saved.blocks).length);
 
-  setHasMenuUI(hasMenu);
-
-  if(hasMenu){
-    render(meta, saved);
-    setStatus("Menú cargado (guardado para esta semana).", true);
-    return;
-  }
-
-  els.menuBox.textContent =
-    `No hay menú guardado para: ${meta.label}\n` +
-    `Pulsa "Generar menú" para crearlo.`;
-  setStatus("Listo para generar un menú nuevo.", false);
+  currentSaved = hasMenu ? saved : null;
+  renderAll(currentMeta, currentSaved);
 }
 
-function actionGenerateIfEmpty(){
-  const meta = currentTargetMeta();
-  const saved = loadSaved();
-  const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
+function actionGenerate(){
+  // Loader como imagen 2
+  showGlobalLoader("Generando menú...");
+  // Simulación breve de carga (para UX) sin afectar lógica
+  setTimeout(() => {
+    const meta = currentTargetMeta();
+    const saved = loadSaved();
+    const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
 
-  if(hasMenu){
-    render(meta, saved);
-    setHasMenuUI(true);
-    setStatus("Ya existe un menú para estas fechas. Si deseas cambiarlo, usa 'Rehacer'.", false);
-    return;
-  }
+    if(hasMenu){
+      currentMeta = meta;
+      currentSaved = saved;
+      renderAll(meta, saved);
+      hideGlobalLoader();
+      return;
+    }
 
-  const blocks = generateAllBlocksUniqueProteinCats(meta, 0);
-  const obj = save(meta, blocks);
-  render(meta, obj);
-  setHasMenuUI(true);
-  setStatus("Menú generado y guardado ✅", true);
+    const blocks = generateAllBlocksUniqueProteinCats(meta, 0);
+    const obj = save(meta, blocks);
+
+    currentMeta = meta;
+    currentSaved = obj;
+
+    renderAll(meta, obj);
+    hideGlobalLoader();
+  }, 650);
 }
 
 function actionRedoAll(){
-  if(els.btnRedoAll.disabled) return;
+  if(!currentSaved) return;
 
-  const ok = confirmDanger("¿Seguro que quieres rehacer TODO el menú?\n\nEsto cambiará los 3 bloques.");
-  if(!ok){
-    setStatus("Acción cancelada.", false);
-    return;
-  }
+  showGlobalLoader("Generando menú...");
+  setTimeout(() => {
+    const meta = currentTargetMeta();
+    const salt = Date.now() & 0xffffffff;
+    const blocks = generateAllBlocksUniqueProteinCats(meta, salt);
+    const obj = save(meta, blocks);
 
-  const meta = currentTargetMeta();
-  const salt = Date.now() & 0xffffffff;
-  const blocks = generateAllBlocksUniqueProteinCats(meta, salt);
-  const obj = save(meta, blocks);
-  render(meta, obj);
-  setHasMenuUI(true);
-  setStatus("Menú completo rehecho ✅", true);
+    currentMeta = meta;
+    currentSaved = obj;
+
+    renderAll(meta, obj);
+    hideGlobalLoader();
+  }, 650);
 }
 
-function actionRedoBlock(blockKey){
-  const meta = currentTargetMeta();
-  const saved = loadSaved();
-  const hasMenu = !!(saved && isSameMeta(saved.meta, meta) && saved.blocks && Object.keys(saved.blocks).length);
-  if(!hasMenu) return;
+function actionRedoModal(which){
+  if(!modalBlockKey || !currentSaved) return;
 
-  const title = BLOCKS.find(b => b.key === blockKey)?.title || "este bloque";
-  const ok = confirmDanger(`¿Seguro que quieres rehacer "${title}"?\n\nSolo cambiará ese bloque.`);
-  if(!ok){
-    setStatus("Acción cancelada.", false);
-    return;
-  }
+  // UX como imagen 6: loader sobre opción seleccionada + bloquear botones
+  setModalButtonsEnabled(false);
+  setModalButtonLoading(which);
 
-  const blocks = {...saved.blocks};
-  blocks[blockKey] = regenerateSingleBlockKeepingUniqueProteinCats(meta, blocks, blockKey);
+  setTimeout(() => {
+    const meta = currentTargetMeta();
+    const blocks = { ...currentSaved.blocks };
 
-  const obj = save(meta, blocks);
-  render(meta, obj);
-  setHasMenuUI(true);
-  setStatus(`Bloque "${title}" rehecho ✅`, true);
+    if(which === "protein"){
+      blocks[modalBlockKey] = regenerateProteinOnlyKeepingUniqueCats(meta, blocks, modalBlockKey);
+    }else if(which === "cooked"){
+      blocks[modalBlockKey] = regenerateCookedOnly(meta, blocks, modalBlockKey);
+    }else if(which === "raw"){
+      blocks[modalBlockKey] = regenerateRawOnly(meta, blocks, modalBlockKey);
+    }
+
+    const obj = save(meta, blocks);
+
+    // Reflejar cambio en tabla (imagen 3)
+    currentMeta = meta;
+    currentSaved = obj;
+    renderAll(meta, obj);
+
+    // Mostrar confirmación (imagen 7)
+    showModalConfirmation();
+  }, 700);
 }
 
 async function copyToClipboard(){
-  const text = els.menuBox.textContent || "";
+  if(!currentSaved) return;
+  const text = formatMenuTextForCopy(currentMeta, currentSaved.blocks);
+
   try{
     await navigator.clipboard.writeText(text);
-    setStatus("Copiado ✅", true);
   }catch{
     const ta = document.createElement("textarea");
     ta.value = text;
@@ -666,20 +1130,48 @@ async function copyToClipboard(){
     ta.select();
     document.execCommand("copy");
     document.body.removeChild(ta);
-    setStatus("Copiado ✅", true);
   }
+
+  // Mini feedback visual: cambia texto un momento
+  const prev = els.btnCopy.textContent;
+  els.btnCopy.innerHTML = `<span class="copyIcon" aria-hidden="true"></span> Copiado ✓`;
+  setTimeout(() => {
+    els.btnCopy.innerHTML = `<span class="copyIcon" aria-hidden="true"></span> Copiar menú`;
+  }, 900);
 }
 
-// Wire
-document.getElementById("btnGenerate").addEventListener("click", actionGenerateIfEmpty);
-document.getElementById("btnRedoAll").addEventListener("click", actionRedoAll);
-document.getElementById("btnRedoLM").addEventListener("click", () => actionRedoBlock("LM"));
-document.getElementById("btnRedoMJ").addEventListener("click", () => actionRedoBlock("MJ"));
-document.getElementById("btnRedoV").addEventListener("click",  () => actionRedoBlock("V"));
-document.getElementById("btnCopy").addEventListener("click", copyToClipboard);
+// =====================
+//  Utilities
+// =====================
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+// =====================
+//  Wire
+// =====================
+els.btnGenerate.addEventListener("click", actionGenerate);
+els.btnRedoAll.addEventListener("click", actionRedoAll);
+els.btnCopy.addEventListener("click", copyToClipboard);
+
+els.modalClose.addEventListener("click", closeModal);
+els.modalClose2.addEventListener("click", closeModal);
+els.modalBackdrop.addEventListener("click", (e) => {
+  if(e.target === els.modalBackdrop) closeModal();
+});
+
+els.btnRedoProtein.addEventListener("click", () => actionRedoModal("protein"));
+els.btnRedoCooked.addEventListener("click", () => actionRedoModal("cooked"));
+els.btnRedoRaw.addEventListener("click", () => actionRedoModal("raw"));
 
 // Init
 ensureMenuLoaded();
 </script>
 </body>
 </html>
+```
