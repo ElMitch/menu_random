@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="es">
 <head>
@@ -1089,7 +1088,7 @@ function actionRedoAll(){
 function actionRedoModal(which){
   if(!modalBlockKey || !currentSaved) return;
 
-  // UX como imagen 6: loader sobre opción seleccionada + bloquear botones
+  // UX: loader sobre opción seleccionada + bloquear botones
   setModalButtonsEnabled(false);
   setModalButtonLoading(which);
 
@@ -1112,8 +1111,12 @@ function actionRedoModal(which){
     currentSaved = obj;
     renderAll(meta, obj);
 
-    // Mostrar confirmación (imagen 7)
-    showModalConfirmation();
+    // ✅ Cerrar modal al terminar
+    closeModal();
+
+    // (Opcional) reset por si lo abres de nuevo inmediatamente
+    setModalButtonsEnabled(true);
+    setModalButtonLoading(null);
   }, 700);
 }
 
@@ -1174,4 +1177,3 @@ ensureMenuLoaded();
 </script>
 </body>
 </html>
-```
