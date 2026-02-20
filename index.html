@@ -1111,12 +1111,21 @@ function actionRedoModal(which){
     currentSaved = obj;
     renderAll(meta, obj);
 
-    // ✅ Cerrar modal al terminar
-    closeModal();
+    // ✅ Mostrar confirmación (imagen 7)
+    showModalConfirmation();
 
-    // (Opcional) reset por si lo abres de nuevo inmediatamente
-    setModalButtonsEnabled(true);
-    setModalButtonLoading(null);
+    // ✅ Cerrar automáticamente después de un par de segundos
+    setTimeout(() => {
+      closeModal();
+
+      // Reset para la próxima vez que abras el modal
+      setModalButtonsEnabled(true);
+      setModalButtonLoading(null);
+
+      // Deja el modal listo para volver a mostrar contenido normal
+      els.modalConfirm.classList.remove("show");
+      els.modalContent.classList.remove("hide");
+    }, 1800); // <-- ajusta aquí (ms). 1500–2200 suele verse bien.
   }, 700);
 }
 
