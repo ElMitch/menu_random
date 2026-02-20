@@ -482,10 +482,6 @@
 
         <!-- Vista confirmación (Imagen 7) -->
         <div class="confirmView" id="modalConfirm">
-          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
-            <h3 class="confirmTitle">¡Platillo actualizado!</h3>
-            <button class="closeX" id="modalClose2" aria-label="Cerrar">×</button>
-          </div>
           <div class="checkBig">✓</div>
         </div>
       </div>
@@ -648,7 +644,6 @@ const els = {
 
   modalBackdrop: document.getElementById("modalBackdrop"),
   modalClose: document.getElementById("modalClose"),
-  modalClose2: document.getElementById("modalClose2"),
   modalTitle: document.getElementById("modalTitle"),
   modalBlockHeading: document.getElementById("modalBlockHeading"),
   modalLines: document.getElementById("modalLines"),
@@ -1021,6 +1016,10 @@ function setModalButtonLoading(which /* "protein"|"cooked"|"raw"|null */){
   }
 }
 function showModalConfirmation(){
+  // ✅ Cambiamos el título superior del modal (el único)
+  els.modalTitle.textContent = "¡Platillo actualizado!";
+
+  // Ocultamos el contenido normal (lista + botones) y mostramos check
   els.modalContent.classList.add("hide");
   els.modalConfirm.classList.add("show");
 }
@@ -1172,7 +1171,6 @@ els.btnRedoAll.addEventListener("click", actionRedoAll);
 els.btnCopy.addEventListener("click", copyToClipboard);
 
 els.modalClose.addEventListener("click", closeModal);
-els.modalClose2.addEventListener("click", closeModal);
 els.modalBackdrop.addEventListener("click", (e) => {
   if(e.target === els.modalBackdrop) closeModal();
 });
